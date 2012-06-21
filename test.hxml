@@ -1,0 +1,9 @@
+-cp src
+-cp test
+-swf bin/as3/test.swf 
+-main Main
+-swf-header 1000:800:40:FFFFFF
+--macro RTTI.generate()
+--no-inline 
+-D fdb 
+-debug
