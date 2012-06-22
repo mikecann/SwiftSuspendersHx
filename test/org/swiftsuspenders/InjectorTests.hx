@@ -6,10 +6,34 @@
  */
 package org.swiftsuspenders;
 import haxe.unit.TestCase;
+import org.swiftsuspenders.dependencyproviders.OtherMappingProvider;
 import org.swiftsuspenders.haxe.Error;
 import org.swiftsuspenders.support.injectees.ClassInjectee;
+import org.swiftsuspenders.support.injectees.ComplexClassInjectee;
+import org.swiftsuspenders.support.injectees.InterfaceInjectee;
+import org.swiftsuspenders.support.injectees.MixedParametersConstructorInjectee;
+import org.swiftsuspenders.support.injectees.MixedParametersMethodInjectee;
+import org.swiftsuspenders.support.injectees.MultipleNamedSingletonsOfSameClassInjectee;
+import org.swiftsuspenders.support.injectees.MultipleSingletonsOfSameClassInjectee;
+import org.swiftsuspenders.support.injectees.NamedClassInjectee;
+import org.swiftsuspenders.support.injectees.NamedInterfaceInjectee;
+import org.swiftsuspenders.support.injectees.OneNamedParameterConstructorInjectee;
+import org.swiftsuspenders.support.injectees.OneNamedParameterMethodInjectee;
+import org.swiftsuspenders.support.injectees.OneParameterConstructorInjectee;
+import org.swiftsuspenders.support.injectees.OneParameterMethodInjectee;
+import org.swiftsuspenders.support.injectees.RecursiveInterfaceInjectee;
+import org.swiftsuspenders.support.injectees.SetterInjectee;
 import org.swiftsuspenders.support.injectees.StringInjectee;
+import org.swiftsuspenders.support.injectees.TwoNamedInterfaceFieldsInjectee;
+import org.swiftsuspenders.support.injectees.TwoNamedParametersConstructorInjectee;
+import org.swiftsuspenders.support.injectees.TwoNamedParametersMethodInjectee;
+import org.swiftsuspenders.support.injectees.TwoParametersConstructorInjectee;
+import org.swiftsuspenders.support.injectees.TwoParametersMethodInjectee;
 import org.swiftsuspenders.support.types.Clazz;
+import org.swiftsuspenders.support.types.Clazz2;
+import org.swiftsuspenders.support.types.ComplexClazz;
+import org.swiftsuspenders.support.types.Interface;
+import org.swiftsuspenders.support.types.Interface2;
 
 class InjectorTests extends TestCase
 {	
@@ -27,25 +51,23 @@ class InjectorTests extends TestCase
 		Injector.purgeInjectionPointsCache();
 		injector = null;
 		receivedInjectorEvents = null;
-    }
-
-	public function testUnbind() : Void 
+    }	
+	
+	public function testUnbindRemovesMapping()
 	{
-		var injectee = new ClassInjectee();
+		var injectee = new InterfaceInjectee();
 		var value = new Clazz();
-		injector.map(Clazz).toValue(value);
-		injector.unmap(Clazz);
-		try { injector.injectInto(injectee); }
-		catch (e : Error) { };
-		assertTrue(injectee.property == null);
+		injector.map(Interface).toValue(value);
+		assertTrue(injector.satisfies(Interface));
+		injector.unmap(Interface);
+		assertFalse(injector.satisfies(Interface));
 	}
-
-
+	
 	public function testInjectorInjectsBoundValueIntoAllInjectees() : Void 
 	{
-		var injectee : ClassInjectee = new ClassInjectee();
-		var injectee2 : ClassInjectee = new ClassInjectee();
-		var value : Clazz = new Clazz();
+		var injectee = new ClassInjectee();
+		var injectee2 = new ClassInjectee();
+		var value = new Clazz();
 		injector.map(Clazz).toValue(value);
 		injector.injectInto(injectee);
 		
@@ -54,270 +76,270 @@ class InjectorTests extends TestCase
 		assertEquals(injectee.property, injectee2.property);
 	}
 
-	//public function testBindValueByInterface() : Void 
-	//{
-		//var injectee : InterfaceInjectee = new InterfaceInjectee();
-		//var value : Interface = new Clazz();
-		//injector.map(Interface).toValue(value);
-		//injector.injectInto(injectee);
-		//Assert.assertStrictlyEquals("Value should have been injected", value, injectee.property);
-	//}
-//
-	//public function testBindNamedValue() : Void 
-	//{
-		//var injectee : NamedClassInjectee = new NamedClassInjectee();
-		//var value : Clazz = new Clazz();
-		//injector.map(Clazz, NamedClassInjectee.NAME).toValue(value);
-		//injector.injectInto(injectee);
-		//Assert.assertStrictlyEquals("Named value should have been injected", value, injectee.property);
-	//}
-//
-	//public function testBindNamedValueByInterface() : Void
-	//{
-		//var injectee : NamedInterfaceInjectee = new NamedInterfaceInjectee();
-		//var value : Interface = new Clazz();
-		//injector.map(Interface, NamedClassInjectee.NAME).toValue(value);
-		//injector.injectInto(injectee);
-		//Assert.assertStrictlyEquals("Named value should have been injected", value, injectee.property);
-	//}
-//
-	//public function testBindFalsyValue() : Void 
-	//{
-		//var injectee = new StringInjectee();
-		//var value : String = "";
-		//injector.map(String).toValue(value);
-		//injector.injectInto(injectee);
-		//assertEquals(value, injectee.property);
-	//}
+	public function testBindValueByInterface() : Void 
+	{
+		var injectee = new InterfaceInjectee();
+		var value = new Clazz();
+		injector.map(Interface).toValue(value);
+		injector.injectInto(injectee);
+		assertTrue(value==injectee.property);
+	}	
 
-	//public function testBoundValueIsNotInjectedInto() : Void 
-	//{
-		//var injectee : RecursiveInterfaceInjectee = new RecursiveInterfaceInjectee();
-		//var value : InterfaceInjectee = new InterfaceInjectee();
-		//injector.map(InterfaceInjectee).toValue(value);
-		//injector.injectInto(injectee);
-		//Assert.assertNull("value shouldn\'t have been injected into", value.property);
-	//}
-//
-	//public function testBindMultipleInterfacesToOneSingletonClass() : Void 
-	//{
-		//var injectee : MultipleSingletonsOfSameClassInjectee = new MultipleSingletonsOfSameClassInjectee();
-		//injector.map(Interface).toSingleton(Clazz);
-		//injector.map(Interface2).toSingleton(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Singleton Value for 'property1' should have been injected", injectee.property1);
-		//Assert.assertNotNull("Singleton Value for 'property2' should have been injected", injectee.property2);
-		//Assert.assertFalse("Singleton Values 'property1' and 'property2' should not be identical", injectee.property1 == injectee.property2);
-	//}
-//
-	//public function testBindClass() : Void 
-	//{
-		//var injectee : ClassInjectee = new ClassInjectee();
-		//var injectee2 : ClassInjectee = new ClassInjectee();
-		//injector.map(Clazz).toType(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Instance of Class should have been injected", injectee.property);
-		//injector.injectInto(injectee2);
-		//Assert.assertFalse("Injected values should be different", injectee.property == injectee2.property);
-	//}
-//
-	//public function testBoundClassIsInjectedInto() : Void 
-	//{
-		//var injectee : ComplexClassInjectee = new ComplexClassInjectee();
-		//var value : Clazz = new Clazz();
-		//injector.map(Clazz).toValue(value);
-		//injector.map(ComplexClazz).toType(ComplexClazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Complex Value should have been injected", injectee.property);
-		//Assert.assertStrictlyEquals("Nested value should have been injected", value, injectee.property.value);
-	//}
-//
-	//public function testBindClassByInterface() : Void 
-	//{
-		//var injectee : InterfaceInjectee = new InterfaceInjectee();
-		//injector.map(Interface).toType(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Instance of Class should have been injected", injectee.property);
-	//}
-//
-	//public function testBindNamedClass() : Void 
-	//{
-		//var injectee : NamedClassInjectee = new NamedClassInjectee();
-		//injector.map(Clazz, NamedClassInjectee.NAME).toType(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Instance of named Class should have been injected", injectee.property);
-	//}
-//
-	//public function testBindNamedClassByInterface() : Void 
-	//{
-		//var injectee : NamedInterfaceInjectee = new NamedInterfaceInjectee();
-		//injector.map(Interface, NamedClassInjectee.NAME).toType(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Instance of named Class should have been injected", injectee.property);
-	//}
+	public function testBindNamedValue() : Void 
+	{
+		var injectee = new NamedClassInjectee();
+		var value = new Clazz();
+		injector.map(Clazz, NamedClassInjectee.NAME).toValue(value);
+		injector.injectInto(injectee);
+		assertEquals(value, injectee.property);
+	}
 
-	//public function testBindSingleton() : Void 
-	//{
-		//var injectee : ClassInjectee = new ClassInjectee();
-		//var injectee2 : ClassInjectee = new ClassInjectee();
-		//injector.map(Clazz).toSingleton(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Instance of Class should have been injected", injectee.property);
-		//injector.injectInto(injectee2);
-		//Assert.assertStrictlyEquals("Injected values should be equal", injectee.property, injectee2.property);
-	//}
+	public function testBindNamedValueByInterface() : Void
+	{
+		var injectee = new NamedInterfaceInjectee();
+		var value = new Clazz();
+		injector.map(Interface, NamedClassInjectee.NAME).toValue(value);
+		injector.injectInto(injectee);
+		assertTrue(value==injectee.property);
+	}
 
-	//public function testBindSingletonOf() : Void 
-	//{
-		//var injectee : InterfaceInjectee = new InterfaceInjectee();
-		//var injectee2 : InterfaceInjectee = new InterfaceInjectee();
-		//injector.map(Interface).toSingleton(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Instance of Class should have been injected", injectee.property);
-		//injector.injectInto(injectee2);
-		//Assert.assertStrictlyEquals("Injected values should be equal", injectee.property, injectee2.property);
-	//}
-//
-	//public function testBindDifferentlyNamedSingletonsBySameInterface() : Void 
-	//{
-		//var injectee : TwoNamedInterfaceFieldsInjectee = new TwoNamedInterfaceFieldsInjectee();
-		//injector.map(Interface, "Name1").toSingleton(Clazz);
-		//injector.map(Interface, "Name2").toSingleton(Clazz2);
-		//injector.injectInto(injectee);
-		//Assert.assertTrue("Property \"property1\" should be of type \"Clazz\"", Std.is(injectee.property1, Clazz));
-		//Assert.assertTrue("Property \"property2\" should be of type \"Clazz2\"", Std.is(injectee.property2, Clazz2));
-		//Assert.assertFalse("Properties \"property1\" and \"property2\" should have received different singletons", injectee.property1 == injectee.property2);
-	//}
-//
-	//public function testPerformSetterInjection() : Void 
-	//{
-		//var injectee : SetterInjectee = new SetterInjectee();
-		//var injectee2 : SetterInjectee = new SetterInjectee();
-		//injector.map(Clazz).toType(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Instance of Class should have been injected", injectee.property);
-		//injector.injectInto(injectee2);
-		//Assert.assertFalse("Injected values should be different", injectee.property == injectee2.property);
-	//}
-//
-	//public function testPerformMethodInjectionWithOneParameter() : Void
-	//{
-		//var injectee : OneParameterMethodInjectee = new OneParameterMethodInjectee();
-		//var injectee2 : OneParameterMethodInjectee = new OneParameterMethodInjectee();
-		//injector.map(Clazz).toType(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Instance of Class should have been injected", injectee.getDependency());
-		//injector.injectInto(injectee2);
-		//Assert.assertFalse("Injected values should be different", injectee.getDependency() == injectee2.getDependency());
-	//}
-//
-	//public function testPerformMethodInjectionWithOneNamedParameter() : Void 
-	//{
-		//var injectee : OneNamedParameterMethodInjectee = new OneNamedParameterMethodInjectee();
-		//var injectee2 : OneNamedParameterMethodInjectee = new OneNamedParameterMethodInjectee();
-		//injector.map(Clazz, "namedDep").toType(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Instance of Class should have been injected for named Clazz parameter", injectee.getDependency());
-		//injector.injectInto(injectee2);
-		//Assert.assertFalse("Injected values should be different", injectee.getDependency() == injectee2.getDependency());
-	//}
-//
-	//public function testPerformMethodInjectionWithTwoParameters() : Void 
-	//{
-		//var injectee : TwoParametersMethodInjectee = new TwoParametersMethodInjectee();
-		//var injectee2 : TwoParametersMethodInjectee = new TwoParametersMethodInjectee();
-		//injector.map(Clazz).toType(Clazz);
-		//injector.map(Interface).toType(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Instance of Class should have been injected for unnamed Clazz parameter", injectee.getDependency());
-		//Assert.assertNotNull("Instance of Class should have been injected for unnamed Interface parameter", injectee.getDependency2());
-		//injector.injectInto(injectee2);
-		//Assert.assertFalse("Injected values should be different", injectee.getDependency() == injectee2.getDependency());
-		//Assert.assertFalse("Injected values for Interface should be different", injectee.getDependency2() == injectee2.getDependency2());
-	//}
-//
-	//public function testPerformMethodInjectionWithTwoNamedParameters() : Void 
-	//{
-		//var injectee : TwoNamedParametersMethodInjectee = new TwoNamedParametersMethodInjectee();
-		//var injectee2 : TwoNamedParametersMethodInjectee = new TwoNamedParametersMethodInjectee();
-		//injector.map(Clazz, "namedDep").toType(Clazz);
-		//injector.map(Interface, "namedDep2").toType(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Instance of Class should have been injected for named Clazz parameter", injectee.getDependency());
-		//Assert.assertNotNull("Instance of Class should have been injected for named Interface parameter", injectee.getDependency2());
-		//injector.injectInto(injectee2);
-		//Assert.assertFalse("Injected values should be different", injectee.getDependency() == injectee2.getDependency());
-		//Assert.assertFalse("Injected values for Interface should be different", injectee.getDependency2() == injectee2.getDependency2());
-	//}
-//
-	//public function testPerformMethodInjectionWithMixedParameters() : Void 
-	//{
-		//var injectee : MixedParametersMethodInjectee = new MixedParametersMethodInjectee();
-		//var injectee2 : MixedParametersMethodInjectee = new MixedParametersMethodInjectee();
-		//injector.map(Clazz, "namedDep").toType(Clazz);
-		//injector.map(Clazz).toType(Clazz);
-		//injector.map(Interface, "namedDep2").toType(Clazz);
-		//injector.injectInto(injectee);
-		//Assert.assertNotNull("Instance of Class should have been injected for named Clazz parameter", injectee.getDependency());
-		//Assert.assertNotNull("Instance of Class should have been injected for unnamed Clazz parameter", injectee.getDependency2());
-		//Assert.assertNotNull("Instance of Class should have been injected for Interface", injectee.getDependency3());
-		//injector.injectInto(injectee2);
-		//Assert.assertFalse("Injected values for named Clazz should be different", injectee.getDependency() == injectee2.getDependency());
-		//Assert.assertFalse("Injected values for unnamed Clazz should be different", injectee.getDependency2() == injectee2.getDependency2());
-		//Assert.assertFalse("Injected values for named Interface should be different", injectee.getDependency3() == injectee2.getDependency3());
-	//}
-//
-	//public function testPerformConstructorInjectionWithOneParameter() : Void 
-	//{
-		//injector.map(Clazz);
-		//var injectee : OneParameterConstructorInjectee = injector.getInstance(OneParameterConstructorInjectee);
-		//Assert.assertNotNull("Instance of Class should have been injected for Clazz parameter", injectee.getDependency());
-	//}
-//
-	//public function testPerformConstructorInjectionWithTwoParameters() : Void 
-	//{
-		//injector.map(Clazz);
-		//injector.map(String).toValue("stringDependency");
-		//var injectee : TwoParametersConstructorInjectee = injector.getInstance(TwoParametersConstructorInjectee);
-		//Assert.assertNotNull("Instance of Class should have been injected for named Clazz parameter", injectee.getDependency());
-		//Assert.assertEquals("The String 'stringDependency' should have been injected for String parameter", injectee.getDependency2(), "stringDependency");
-	//}
-//
-	//public function testPerformConstructorInjectionWithOneNamedParameter() : Void 
-	//{
-		//injector.map(Clazz, "namedDependency").toType(Clazz);
-		//var injectee : OneNamedParameterConstructorInjectee = injector.getInstance(OneNamedParameterConstructorInjectee);
-		//Assert.assertNotNull("Instance of Class should have been injected for named Clazz parameter", injectee.getDependency());
-	//}
-//
-	//public function testPerformXMLConfiguredConstructorInjectionWithOneNamedParameter() : Void 
-	//{
-		//injector = new Injector();
-		//injector.map(Clazz, "namedDependency").toType(Clazz);
-		//var injectee : OneNamedParameterConstructorInjectee = injector.getInstance(OneNamedParameterConstructorInjectee);
-		//Assert.assertNotNull("Instance of Class should have been injected for named Clazz parameter", injectee.getDependency());
-	//}
-//
-	//public function testPerformConstructorInjectionWithTwoNamedParameter() : Void 
-	//{
-		//injector.map(Clazz, "namedDependency").toType(Clazz);
-		//injector.map(String, "namedDependency2").toValue("stringDependency");
-		//var injectee : TwoNamedParametersConstructorInjectee = injector.getInstance(TwoNamedParametersConstructorInjectee);
-		//Assert.assertNotNull("Instance of Class should have been injected for named Clazz parameter", injectee.getDependency());
-		//Assert.assertEquals("The String 'stringDependency' should have been injected for named String parameter", injectee.getDependency2(), "stringDependency");
-	//}
-//
-	//public function testPerformConstructorInjectionWithMixedParameters() : Void 
-	//{
-		//injector.map(Clazz, "namedDep").toType(Clazz);
-		//injector.map(Clazz).toType(Clazz);
-		//injector.map(Interface, "namedDep2").toType(Clazz);
-		//var injectee : MixedParametersConstructorInjectee = injector.getInstance(MixedParametersConstructorInjectee);
-		//Assert.assertNotNull("Instance of Class should have been injected for named Clazz parameter", injectee.getDependency());
-		//Assert.assertNotNull("Instance of Class should have been injected for unnamed Clazz parameter", injectee.getDependency2());
-		//Assert.assertNotNull("Instance of Class should have been injected for Interface", injectee.getDependency3());
-	//}
-//
+	public function testBindFalsyValue() : Void 
+	{
+		var injectee = new StringInjectee();
+		var value : String = null;
+		injector.map(String).toValue(value);
+		injector.injectInto(injectee);
+		assertEquals(value, injectee.property);
+	}
+
+	public function testBoundValueIsNotInjectedInto() : Void 
+	{
+		var injectee = new RecursiveInterfaceInjectee();
+		var value = new InterfaceInjectee();
+		injector.map(InterfaceInjectee).toValue(value);
+		injector.injectInto(injectee);
+		assertTrue(value.property == null);
+	}
+
+	public function testBindMultipleInterfacesToOneSingletonClass() : Void 
+	{
+		var injectee = new MultipleSingletonsOfSameClassInjectee();
+		injector.map(Interface).toSingleton(Clazz);
+		injector.map(Interface2).toSingleton(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.property1 != null); // Singleton Value for 'property1' should have been injected
+		assertTrue(injectee.property2 != null); // Singleton Value for 'property2' should have been injected
+		//assertTrue(injectee.property1 != injectee.property2); // Singleton Values 'property1' and 'property2' should not be identical
+	}
+
+	public function testBindClass() : Void 
+	{
+		var injectee = new ClassInjectee();
+		var injectee2 = new ClassInjectee();
+		injector.map(Clazz).toType(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.property != null); // Instance of Class should have been injected
+		injector.injectInto(injectee2);
+		assertTrue(injectee.property != injectee2.property); // Injected values should be different
+	}
+
+	public function testBoundClassIsInjectedInto() : Void 
+	{
+		var injectee = new ComplexClassInjectee();
+		var value : Clazz = new Clazz();
+		injector.map(Clazz).toValue(value);
+		injector.map(ComplexClazz).toType(ComplexClazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.property != null); // Complex Value should have been injected
+		assertTrue(value == injectee.property.value); // Nested value should have been injected
+	}
+
+	public function testBindClassByInterface() : Void 
+	{
+		var injectee = new InterfaceInjectee();
+		injector.map(Interface).toType(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.property!=null); // Instance of Class should have been injected
+	}
+
+	public function testBindNamedClass() : Void 
+	{
+		var injectee = new NamedClassInjectee();
+		injector.map(Clazz, NamedClassInjectee.NAME).toType(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.property!=null); // Instance of named Class should have been injected
+	}
+
+	public function testBindNamedClassByInterface() : Void 
+	{
+		var injectee : NamedInterfaceInjectee = new NamedInterfaceInjectee();
+		injector.map(Interface, NamedClassInjectee.NAME).toType(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.property!=null); // Instance of named Class should have been injected
+	}
+
+	public function testBindSingleton() : Void 
+	{
+		var injectee = new ClassInjectee();
+		var injectee2 = new ClassInjectee();
+		injector.map(Clazz).toSingleton(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.property != null); // Instance of Class should have been injected
+		injector.injectInto(injectee2);
+		assertEquals(injectee.property, injectee2.property); // Injected values should be equal
+	}
+
+	public function testBindSingletonOf() : Void 
+	{
+		var injectee = new InterfaceInjectee();
+		var injectee2 = new InterfaceInjectee();
+		injector.map(Interface).toSingleton(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.property != null); // Instance of Class should have been injected
+		injector.injectInto(injectee2);
+		assertTrue(injectee.property == injectee2.property); // Injected values should be equal
+	}
+
+	public function testBindDifferentlyNamedSingletonsBySameInterface() : Void 
+	{
+		var injectee = new TwoNamedInterfaceFieldsInjectee();
+		injector.map(Interface, "Name1").toSingleton(Clazz);
+		injector.map(Interface, "Name2").toSingleton(Clazz2);
+		injector.injectInto(injectee);
+		assertTrue(Std.is(injectee.property1, Clazz)); // Property \"property1\" should be of type \"Clazz\"
+		assertTrue(Std.is(injectee.property2, Clazz2)); // roperty \"property2\" should be of type \"Clazz2\"
+		assertTrue(injectee.property1 != injectee.property2); // Properties \"property1\" and \"property2\" should have received different singletons
+	}	
+
+	public function testPerformSetterInjection() : Void 
+	{
+		var injectee = new SetterInjectee();
+		var injectee2 = new SetterInjectee();
+		injector.map(Clazz).toType(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.property != null); // Instance of Class should have been injected
+		injector.injectInto(injectee2);
+		assertTrue(injectee.property != injectee2.property); // Injected values should be different
+	}
+
+	public function testPerformMethodInjectionWithOneParameter() : Void
+	{
+		var injectee = new OneParameterMethodInjectee();
+		var injectee2 = new OneParameterMethodInjectee();
+		injector.map(Clazz).toType(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.getDependency() != null); // Instance of Class should have been injected
+		injector.injectInto(injectee2);
+		assertTrue(injectee.getDependency() != injectee2.getDependency()); // Injected values should be different
+	}
+
+	public function testPerformMethodInjectionWithOneNamedParameter() : Void 
+	{
+		var injectee = new OneNamedParameterMethodInjectee();
+		var injectee2 = new OneNamedParameterMethodInjectee();
+		injector.map(Clazz, "namedDep").toType(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.getDependency() != null); // Instance of Class should have been injected for named Clazz parameter
+		injector.injectInto(injectee2);
+		assertTrue(injectee.getDependency() != injectee2.getDependency()); // Injected values should be different
+	}
+
+	public function testPerformMethodInjectionWithTwoParameters() : Void 
+	{
+		var injectee = new TwoParametersMethodInjectee();
+		var injectee2 = new TwoParametersMethodInjectee();
+		injector.map(Clazz).toType(Clazz);
+		injector.map(Interface).toType(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.getDependency() != null); // Instance of Class should have been injected for unnamed Clazz parameter
+		assertTrue(injectee.getDependency2() != null); // Instance of Class should have been injected for unnamed Interface parameter
+		injector.injectInto(injectee2);
+		assertTrue(injectee.getDependency() != injectee2.getDependency()); // Injected values should be different
+		assertTrue(injectee.getDependency2() != injectee2.getDependency2()); // Injected values for Interface should be different
+	}
+
+	public function testPerformMethodInjectionWithTwoNamedParameters() : Void 
+	{
+		var injectee = new TwoNamedParametersMethodInjectee();
+		var injectee2 = new TwoNamedParametersMethodInjectee();
+		injector.map(Clazz, "namedDep").toType(Clazz);
+		injector.map(Interface, "namedDep2").toType(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.getDependency() != null); // Instance of Class should have been injected for named Clazz parameter
+		assertTrue(injectee.getDependency2() != null); // Instance of Class should have been injected for named Interface parameter
+		injector.injectInto(injectee2);
+		assertTrue(injectee.getDependency() != injectee2.getDependency()); // Injected values should be different
+		assertTrue(injectee.getDependency2() != injectee2.getDependency2()); // Injected values for Interface should be different
+	}
+
+	public function testPerformMethodInjectionWithMixedParameters() : Void 
+	{
+		var injectee = new MixedParametersMethodInjectee();
+		var injectee2 = new MixedParametersMethodInjectee();
+		injector.map(Clazz, "namedDep").toType(Clazz);
+		injector.map(Clazz).toType(Clazz);
+		injector.map(Interface, "namedDep2").toType(Clazz);
+		injector.injectInto(injectee);
+		assertTrue(injectee.getDependency() != null); // Instance of Class should have been injected for named Clazz parameter
+		assertTrue(injectee.getDependency2() != null); // Instance of Class should have been injected for unnamed Clazz parameter
+		assertTrue(injectee.getDependency3() != null); // Instance of Class should have been injected for Interface
+		injector.injectInto(injectee2);
+		assertTrue(injectee.getDependency() != injectee2.getDependency()); // Injected values for named Clazz should be different
+		assertTrue(injectee.getDependency2() != injectee2.getDependency2()); // Injected values for unnamed Clazz should be different
+		assertTrue(injectee.getDependency3() != injectee2.getDependency3()); // Injected values for named Interface should be different
+	}	
+
+	public function testPerformConstructorInjectionWithOneParameter() : Void 
+	{
+		injector.map(Clazz);
+		var injectee = injector.getInstance(OneParameterConstructorInjectee);
+		assertTrue(injectee.getDependency() != null); // Instance of Class should have been injected for Clazz parameter
+	}
+
+	public function testPerformConstructorInjectionWithTwoParameters() : Void 
+	{
+		injector.map(Clazz);
+		injector.map(String).toValue("stringDependency");
+		var injectee = injector.getInstance(TwoParametersConstructorInjectee);
+		assertTrue(injectee.getDependency() != null); // Instance of Class should have been injected for named Clazz parameter
+		assertTrue(injectee.getDependency2()=="stringDependency"); // The String 'stringDependency' should have been injected for String parameter
+	}
+
+	public function testPerformConstructorInjectionWithOneNamedParameter() : Void 
+	{
+		injector.map(Clazz, "namedDependency").toType(Clazz);
+		var injectee = injector.getInstance(OneNamedParameterConstructorInjectee);
+		assertTrue(injectee.getDependency()!=null); // Instance of Class should have been injected for named Clazz parameter
+	}
+
+	public function testPerformXMLConfiguredConstructorInjectionWithOneNamedParameter() : Void 
+	{
+		injector = new Injector();
+		injector.map(Clazz, "namedDependency").toType(Clazz);
+		var injectee = injector.getInstance(OneNamedParameterConstructorInjectee);
+		assertTrue(injectee.getDependency()!=null); // Instance of Class should have been injected for named Clazz parameter
+	}
+
+	public function testPerformConstructorInjectionWithTwoNamedParameter() : Void 
+	{
+		injector.map(Clazz, "namedDependency").toType(Clazz);
+		injector.map(String, "namedDependency2").toValue("stringDependency");
+		var injectee = injector.getInstance(TwoNamedParametersConstructorInjectee);
+		assertTrue(injectee.getDependency() != null); // Instance of Class should have been injected for named Clazz parameter
+		assertTrue(injectee.getDependency2()== "stringDependency"); // The String 'stringDependency' should have been injected for named String parameter
+	}
+
+	public function testPerformConstructorInjectionWithMixedParameters() : Void 
+	{
+		injector.map(Clazz, "namedDep").toType(Clazz);
+		injector.map(Clazz).toType(Clazz);
+		injector.map(Interface, "namedDep2").toType(Clazz);
+		var injectee = injector.getInstance(MixedParametersConstructorInjectee);
+		assertTrue(injectee.getDependency()!=null); // Instance of Class should have been injected for named Clazz parameter
+		assertTrue(injectee.getDependency2()!=null); // Instance of Class should have been injected for unnamed Clazz parameter
+		assertTrue(injectee.getDependency3()!=null); // Instance of Class should have been injected for Interface
+	}
+
 	//public function testPerformNamedArrayInjection() : Void 
 	//{
 		//var ac : ArrayCollection = new ArrayCollection();
@@ -326,58 +348,62 @@ class InjectorTests extends TestCase
 		//Assert.assertNotNull("Instance 'ac' should have been injected for named ArrayCollection parameter", injectee.ac);
 		//Assert.assertEquals("Instance field 'ac' should be identical to local variable 'ac'", ac, injectee.ac);
 	//}
-//
-	//public function testPerformMappedMappingInjection() : Void 
-	//{
-		//var mapping : InjectionMapping = injector.map(Interface);
-		//mapping.toSingleton(Clazz);
-		//injector.map(Interface2).toProvider(new OtherMappingProvider(mapping));
-		//var injectee : MultipleSingletonsOfSameClassInjectee = injector.getInstance(MultipleSingletonsOfSameClassInjectee);
-		//Assert.assertEquals("Instance field 'property1' should be identical to Instance field 'property2'", injectee.property1, injectee.property2);
-	//}
-//
-	//public function testPerformMappedNamedMappingInjection() : Void 
-	//{
-		//var mapping : InjectionMapping = injector.map(Interface);
-		//mapping.toSingleton(Clazz);
-		//injector.map(Interface2).toProvider(new OtherMappingProvider(mapping));
-		//injector.map(Interface, "name1").toProvider(new OtherMappingProvider(mapping));
-		//injector.map(Interface2, "name2").toProvider(new OtherMappingProvider(mapping));
-		//var injectee : MultipleNamedSingletonsOfSameClassInjectee = injector.getInstance(MultipleNamedSingletonsOfSameClassInjectee);
-		//Assert.assertEquals("Instance field 'property1' should be identical to Instance field 'property2'", injectee.property1, injectee.property2);
-		//Assert.assertEquals("Instance field 'property1' should be identical to Instance field 'namedProperty1'", injectee.property1, injectee.namedProperty1);
-		//Assert.assertEquals("Instance field 'property1' should be identical to Instance field 'namedProperty2'", injectee.property1, injectee.namedProperty2);
-	//}
-//
-	//public function testPerformInjectionIntoValueWithRecursiveSingeltonDependency() : Void
-	//{
-		//var valueInjectee : InterfaceInjectee = new InterfaceInjectee();
-		//injector.map(InterfaceInjectee).toValue(valueInjectee);
-		//injector.map(Interface).toSingleton(RecursiveInterfaceInjectee);
-		//injector.injectInto(valueInjectee);
-	//}
-//
+
+	public function testPerformMappedMappingInjection() : Void 
+	{
+		var mapping = injector.map(Interface);
+		mapping.toSingleton(Clazz);
+		injector.map(Interface2).toProvider(new OtherMappingProvider(mapping));
+		var injectee = injector.getInstance(MultipleSingletonsOfSameClassInjectee);
+		assertTrue(injectee.property1==injectee.property2); // Instance field 'property1' should be identical to Instance field 'property2'
+	}
+
+	public function testPerformMappedNamedMappingInjection() : Void 
+	{
+		var mapping = injector.map(Interface);
+		mapping.toSingleton(Clazz);
+		injector.map(Interface2).toProvider(new OtherMappingProvider(mapping));
+		injector.map(Interface, "name1").toProvider(new OtherMappingProvider(mapping));
+		injector.map(Interface2, "name2").toProvider(new OtherMappingProvider(mapping));
+		var injectee = injector.getInstance(MultipleNamedSingletonsOfSameClassInjectee);
+		assertTrue(injectee.property1==injectee.property2); // Instance field 'property1' should be identical to Instance field 'property2'
+		assertTrue(injectee.property1, injectee.namedProperty1); // Instance field 'property1' should be identical to Instance field 'namedProperty1'
+		assertTrue(injectee.property1, injectee.namedProperty2); // Instance field 'property1' should be identical to Instance field 'namedProperty2'
+	}	
+
 	//public function testInjectXMLValue() : Void 
 	//{
 		//var injectee : XMLInjectee = new XMLInjectee();
-		//var value : FastXML = FastXML.parse("<test/>");
+		//var value = FastXML.parse("<test/>");
 		//injector.map(XML).toValue(value);
 		//injector.injectInto(injectee);
-		//Assert.assertEquals("injected value should be indentical to mapped value", injectee.property, value);
+		//assertTrue(injectee.property==value); // injected value should be indentical to mapped value
 	//}
-//
-	//@:meta(Test(expects="org.swiftsuspenders.InjectorError"))
-	//public function testHaltOnMissingDependency() : Void {
-		//var injectee : InterfaceInjectee = new InterfaceInjectee();
-		//injector.injectInto(injectee);
-	//}
-//
-	//@:meta(Test(expects="org.swiftsuspenders.InjectorError"))
-	//public function testHaltOnMissingNamedDependency() : Void {
-		//var injectee : NamedClassInjectee = new NamedClassInjectee();
-		//injector.injectInto(injectee);
-	//}
-//
+
+	public function testHaltOnMissingDependency() : Void 
+	{
+		var errorThrown = false;
+		try
+		{
+			var injectee : InterfaceInjectee = new InterfaceInjectee();
+			injector.injectInto(injectee);
+		}
+		catch (e:Dynamic) { errorThrown = true; }
+		assertTrue(errorThrown);
+	}
+
+	public function testHaltOnMissingNamedDependency() : Void 
+	{		
+		var errorThrown = false;
+		try
+		{
+			var injectee : NamedClassInjectee = new NamedClassInjectee();
+			injector.injectInto(injectee);
+		}
+		catch (e:Dynamic) { errorThrown = true; }
+		assertTrue(errorThrown);
+	}
+
 	//public function testPostConstructIsCalled() : Void 
 	//{
 		//var injectee : ClassInjectee = new ClassInjectee();

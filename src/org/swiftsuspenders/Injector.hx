@@ -237,9 +237,9 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 	 *
 	 * @return <code>true</code> if the dependency can be satisfied, <code>false</code> if not
 	 */	
-	//public function satisfies(type : Class<Dynamic>, name : String = "") : Bool {
-		//return getProvider(Type.getClassName(type) + "|" + name) != null;
-	//}
+	public function satisfies(type : Class<Dynamic>, name : String = "") : Bool {
+		return getProvider(Type.getClassName(type) + "|" + name) != null;
+	}
 
 	/**
 	 * Indicates whether the injector can directly supply a response for the specified
@@ -313,18 +313,18 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 	 *
 	 * @return The created instance
 	 */	
-	//public function getInstance(type : Class<Dynamic>, name : String = "", targetType : Class<Dynamic> = null) : Dynamic {
-		//var mappingId : String = Type.getClassName(type) + "|" + name;
-		//var provider : DependencyProvider = getProvider(mappingId);
-		//if(provider != null)  {
-			//var ctor : ConstructorInjectionPoint = _classDescriptor.getDescription(type).ctor;
-			//return provider.apply(targetType, this, (ctor) ? ctor.injectParameters : null);
-		//}
-		//if(name != null)  {
-			//throw new InjectorError("No mapping found for request " + mappingId + ". getInstance only creates an unmapped instance if no name is given.");
-		//}
-		//return instantiateUnmapped(type);
-	//}
+	public function getInstance(type : Class<Dynamic>, name : String = "", targetType : Class<Dynamic> = null) : Dynamic {
+		var mappingId : String = Type.getClassName(type) + "|" + name;
+		var provider : DependencyProvider = getProvider(mappingId);
+		if(provider != null)  {
+			var ctor = _classDescriptor.getDescription(type).ctor;
+			return provider.apply(targetType, this, ctor!=null ? ctor.injectParameters : null);
+		}
+		if(name != null)  {
+			throw new InjectorError("No mapping found for request " + mappingId + ". getInstance only creates an unmapped instance if no name is given.");
+		}
+		return instantiateUnmapped(type);
+	}
 
 	/**
 	 * Creates a new <code>Injector</code> and sets itself as that new <code>Injector</code>'s
@@ -386,14 +386,14 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 	}
 
 	public function instantiateUnmapped(type : Class<Dynamic>) : Dynamic {
-		//var description : TypeDescription = _classDescriptor.getDescription(type);
-		//if(!description.ctor)  {
-			//throw new InjectorError("Can't instantiate interface " + Type.getClassName(type));
-		//}
-		//var instance : Dynamic = description.ctor.createInstance(type, this);
-		//hasEventListener(InjectionEvent.POST_INSTANTIATE) && dispatchEvent(new InjectionEvent(InjectionEvent.POST_INSTANTIATE, instance, type));
-		//applyInjectionPoints(instance, type, description.injectionPoints);
-		//return instance;
+		var description = _classDescriptor.getDescription(type);
+		if(description.ctor==null)  {
+			throw new InjectorError("Can't instantiate interface " + Type.getClassName(type));
+		}
+		var instance = description.ctor.createInstance(type, this);
+		hasEventListener(InjectionEvent.POST_INSTANTIATE) && dispatchEvent(new InjectionEvent(InjectionEvent.POST_INSTANTIATE, instance, type));
+		applyInjectionPoints(instance, type, description.injectionPoints);
+		return instance;
 		return null;
 	}
 
@@ -440,10 +440,11 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 			return null;
 		}
 		var typeName = parts.pop();
-		var definition = null;
+		var definition : Class<Dynamic> = null;
 		try
 		{
-			definition = Type.getClass(typeName);
+			
+			definition = Type.resolveClass(typeName);
 			
 			//var definition = _applicationDomain.hasDefinition(typeName)
 				//? _applicationDomain.getDefinition(typeName)
@@ -454,7 +455,7 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 			return null;
 		}
 		
-		if (definition==null) // !Std.is(definition, Class<Dynamic>) 
+		if (definition==null || !Std.is(definition, Class)) // !Std.is(definition, Class<Dynamic>) 
 		{
 			return null;
 		}

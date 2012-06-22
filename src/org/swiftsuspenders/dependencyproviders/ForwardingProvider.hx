@@ -18,7 +18,7 @@ class ForwardingProvider implements DependencyProvider {
 		this.provider = provider;
 	}
 
-	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Dictionary) : Dynamic {
+	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Hash<String>) : Dynamic {
 		return provider.apply(targetType, activeInjector, injectParameters);
 	}
 

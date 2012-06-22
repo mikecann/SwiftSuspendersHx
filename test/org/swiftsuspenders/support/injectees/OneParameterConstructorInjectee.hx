@@ -30,6 +30,7 @@ class OneParameterConstructorInjectee {
 		return m_dependency;
 	}
 
+	@Inject
 	public function new(dependency : Clazz) {
 		m_dependency = dependency;
 	}

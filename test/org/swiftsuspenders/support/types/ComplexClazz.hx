@@ -23,8 +23,9 @@ package org.swiftsuspenders.support.types;
 
 class ComplexClazz implements ComplexInterface {
 
-	@:meta(Inject())
+	@Inject
 	public var value : Clazz;
+	
 	public function new() {
 	}
 

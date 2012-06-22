@@ -19,7 +19,7 @@ class InjectorUsingProvider extends ForwardingProvider {
 		this.injector = injector;
 	}
 
-	override public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Dictionary) : Dynamic {
+	override public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Hash<String>) : Dynamic {
 		return provider.apply(targetType, injector, injectParameters);
 	}
 

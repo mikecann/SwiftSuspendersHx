@@ -23,11 +23,13 @@ package org.swiftsuspenders.support.injectees;
 
 import org.swiftsuspenders.support.types.Clazz;
 
-class SetterInjectee {
+class SetterInjectee {	
+	
 	public var property(getProperty, setProperty) : Clazz;
-
-	var m_property : Clazz;
-	@:meta(Inject())
+	
+	var m_property : Clazz;	
+	
+	@Inject
 	public function setProperty(value : Clazz) : Clazz {
 		m_property = value;
 		return value;

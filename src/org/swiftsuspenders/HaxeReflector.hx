@@ -1,7 +1,10 @@
 package org.swiftsuspenders;
 import haxe.rtti.Meta;
 import org.swiftsuspenders.haxe.Error;
+import org.swiftsuspenders.typedescriptions.ConstructorInjectionPoint;
 import org.swiftsuspenders.typedescriptions.InjectionPoint;
+import org.swiftsuspenders.typedescriptions.MethodInjectionPoint;
+import org.swiftsuspenders.typedescriptions.NoParamsConstructorInjectionPoint;
 import org.swiftsuspenders.typedescriptions.PropertyInjectionPoint;
 import org.swiftsuspenders.typedescriptions.TypeDescription;
 
@@ -26,17 +29,95 @@ class HaxeReflector extends ReflectorBase, implements Reflector
 	}
 
 	public function describeInjections(type : Class<Dynamic>) : TypeDescription 
-	{
-		
+	{		
 		var description = new TypeDescription(false);
-		//addCtorInjectionPoint(description, traits, typeName);		
-		addFieldInjectionPoints(description, type);
+		
+		var typeMeta = Meta.getType(type);				
+		var fieldsMeta = getFields(type);
+				
+		for (field in Reflect.fields(fieldsMeta))
+		{
+			var fieldMeta:Dynamic = Reflect.field(fieldsMeta, field);
+			
+			var hasInject = Reflect.hasField(fieldMeta, "Inject");
+			var post = Reflect.hasField(fieldMeta, "PostConstruct");
+			var args = Reflect.field(fieldMeta, "args");
+			
+			if (field == "_") // constructor
+			{
+				if (args.length == 0)
+				{
+					description.ctor = new NoParamsConstructorInjectionPoint();
+				}
+				else
+				{
+					
+					//var parameters : Array<Dynamic> = traits.constructor;
+					//if(parameters == null)  {
+						//description.ctor = traits.bases.length > (0) ? new NoParamsConstructorInjectionPoint() : null;
+						//return;
+					//}
+					//var injectParameters : Dictionary = extractTagParameters("Inject", traits.metadata);
+					//var parameterNames : Array<Dynamic> = (injectParameters && injectParameters.name || "").split(",");
+					//var requiredParameters : Int = gatherMethodParameters(parameters, parameterNames, typeName);
+					//description.ctor = new ConstructorInjectionPoint(parameters, requiredParameters, injectParameters);
+					
+					//var injectParameters : Dictionary = extractTagParameters("Inject", traits.metadata);
+					//var parameterNames : Array<Dynamic> = (injectParameters && injectParameters.name || "").split(",");
+					//var requiredParameters : Int = gatherMethodParameters(parameters, parameterNames, typeName);
+					
+					var parameters : Array<String> = [];
+					var requiredParameters : Int = gatherMethodParameters(fieldMeta,parameters);
+					description.ctor = new ConstructorInjectionPoint(parameters, requiredParameters, null);
+				}				
+			}
+			else if (Reflect.hasField(fieldMeta, "args")) // method
+			{
+				if (hasInject) // injection
+				{
+					//var injectParameters : Dictionary = extractTagParameters("Inject", method.metadata);
+					//var optional : Bool = injectParameters.optional == "true";
+					
+					//var parameterNames : Array<Dynamic> = (injectParameters.name || "").split(",");
+					var parameters : Array<String> = [];
+					var requiredParameters : Int = gatherMethodParameters(fieldMeta,parameters);
+					
+					var injectionPoint = new MethodInjectionPoint(fieldMeta.name[0], parameters, requiredParameters, false, null);
+					description.addInjectionPoint(injectionPoint);
+					
+					
+					//var injectionPoint = new MethodInjectionPoint(fieldMeta, this);
+					//description.addInjectionPoint(injectionPoint);
+				}
+				else if (post) // post construction
+				{
+					//var injectionPoint = new PostConstructInjectionPoint(fieldMeta, this);
+					//postConstructMethodPoints.push(injectionPoint);
+				}
+			}
+			else if (type != null && hasInject) // property
+			{				
+				var type = fieldMeta.type;			
+				var injectionPointName = fieldMeta.Inject!=null ? fieldMeta.Inject[0] : "";
+				var injectionPoint = new PropertyInjectionPoint(fieldMeta.type + "|" + injectionPointName, field, false, null);
+				description.addInjectionPoint(injectionPoint);
+			}
+			
+			//var post = Reflect.hasField(fieldMeta, "post");
+			//var type = Reflect.field(fieldMeta, "type");
+			//var args = Reflect.field(fieldMeta, "args");	
+		}	
+				
+		
+		if(description.ctor==null && !Reflect.hasField(typeMeta, "interface")) description.ctor = new NoParamsConstructorInjectionPoint();
+		
+		//addCtorInjectionPoint(description, type);		
+		//addFieldInjectionPoints(description, type);
 		//addMethodInjectionPoints(description, traits.methods, typeName);
 		//addPostConstructMethodPoints(description, traits.variables, typeName);
 		//addPostConstructMethodPoints(description, traits.accessors, typeName);
 		//addPostConstructMethodPoints(description, traits.methods, typeName);
-		//addPreDestroyMethodPoints(description, traits.methods, typeName);
-				
+		//addPreDestroyMethodPoints(description, traits.methods, typeName);				
 			
 		
 		return description;
@@ -48,8 +129,7 @@ class HaxeReflector extends ReflectorBase, implements Reflector
 
 		while (type != null)
 		{
-			var typeMeta = haxe.rtti.Meta.getFields(type);
-
+			var typeMeta = Meta.getFields(type);
 			for (field in Reflect.fields(typeMeta))
 			{
 				Reflect.setField(meta, field, Reflect.field(typeMeta, field));
@@ -136,62 +216,71 @@ class HaxeReflector extends ReflectorBase, implements Reflector
 
 	private function addFieldInjectionPoints(description : TypeDescription, type : Class<Dynamic>) : Void 
 	{
-		var typeMeta = Meta.getType(type);		
-		if (typeMeta != null && Reflect.hasField(typeMeta, "interface"))
-		{
-			throw new InjectorError("Interfaces can't be used as instantiatable classes.");
-		}
-		var fieldsMeta = getFields(type);
-				
-		for (field in Reflect.fields(fieldsMeta))
-		{
-			var fieldMeta:Dynamic = Reflect.field(fieldsMeta, field);
-
-			if (Reflect.hasField(fieldMeta, "Inject"))
-			{			
-				var type = fieldMeta.type;			
-				var injectionPointName = "";
-				var injectionPoint = new PropertyInjectionPoint(fieldMeta.type + "|" + injectionPointName, field, false, null);
-				description.addInjectionPoint(injectionPoint);
-			}
-			
+		//var typeMeta = Meta.getType(type);		
+		//if (typeMeta != null && Reflect.hasField(typeMeta, "interface"))
+		//{
+			//throw new InjectorError("Interfaces can't be used as instantiatable classes.");
+		//}
+		//var fieldsMeta = getFields(type);
+				//
+		//for (field in Reflect.fields(fieldsMeta))
+		//{
+			//var fieldMeta:Dynamic = Reflect.field(fieldsMeta, field);
+//
+			//if (Reflect.hasField(fieldMeta, "Inject"))
+			//{			
+				//var type = fieldMeta.type;			
+				//var injectionPointName = fieldMeta.Inject!=null ? fieldMeta.Inject[0] : "";
+				//var injectionPoint = new PropertyInjectionPoint(fieldMeta.type + "|" + injectionPointName, field, false, null);
+				//description.addInjectionPoint(injectionPoint);
+			//}
+			//
 			//var post = Reflect.hasField(fieldMeta, "post");
 			//var type = Reflect.field(fieldMeta, "type");
 			//var args = Reflect.field(fieldMeta, "args");
-
-		
-		}		
+//
+		//
+		//}		
 	}
 
-	function gatherMethodParameters(parameters : Array<Dynamic>, parameterNames : Array<Dynamic>, typeName : String) : Int 
+	function gatherMethodParameters(meta:Dynamic, parameters:Array<String>):Int
 	{
-		//var requiredLength : Int = 0;
-		//var length : Int = parameters.length;
-		//var i : Int = 0;
-		//while(i < length) {
-			//var parameter : Dynamic = parameters[i];
-			//var injectionName : String = parameterNames[i] || "";
-			//var parameterTypeName : String = parameter.type;
-			//if(parameterTypeName == "*")  {
-				//if(!parameter.optional)  {
-					//throw new InjectorError("Error in method definition of injectee \"" + typeName + ". Required parameters can\'t have type \"*\".");
-				//}
-//
-				//else  {
-					//parameterTypeName = null;
-				//}
-//
-			//}
-			//if(!parameter.optional)  {
-				//requiredLength++;
-			//}
-			//parameters[i] = parameterTypeName + "|" + injectionName;
-			//i++;
-		//}
-		//return requiredLength;
+		var nameArgs = meta.Inject;
+		var args:Array<Dynamic> = meta.args;
+		var requiredParameters = 0;
+
+		if (nameArgs == null) nameArgs = [];
+
+		var i = 0;
+		for (arg in args)
+		{
+			var injectionName = "";
+
+			if (i < nameArgs.length)
+			{
+				injectionName = nameArgs[i];
+			}
+
+			var parameterTypeName = arg.type;
+
+			if (arg.opt)
+			{
+				if (parameterTypeName == "Dynamic")
+				{
+					//TODO: Find a way to trace name of affected class here
+					throw new InjectorError('Error in method definition of injectee. Required parameters can\'t have non class type.');
+				}
+			}
+			else
+			{
+				requiredParameters++;
+			}
+			
+			parameters.push(parameterTypeName + "|" + injectionName); //_parameterInjectionConfigs.push(new ParameterInjectionConfig(parameterTypeName, injectionName));
+			i++;
+		}
 		
-		throw new Error("gatherMethodParameters NOT IMPLEMENTED");
-		return 0;
+		return requiredParameters;
 	}
 
 	function gatherOrderedInjectionPointsForTag(injectionPointClass : Class<Dynamic>, tag : String, methods : Array<Dynamic>, typeName : String) : Array<Dynamic> 

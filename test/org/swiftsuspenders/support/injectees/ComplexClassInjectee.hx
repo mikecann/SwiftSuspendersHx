@@ -25,8 +25,9 @@ import org.swiftsuspenders.support.types.ComplexClazz;
 
 class ComplexClassInjectee {
 
-	@:meta(Inject())
+	@Inject
 	public var property : ComplexClazz;
+	
 	public function new() {
 	}
 

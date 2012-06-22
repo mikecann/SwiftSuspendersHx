@@ -23,7 +23,6 @@ package org.swiftsuspenders.support.injectees;
 
 import org.swiftsuspenders.support.types.Clazz;
 
-@:meta(Inject(name="namedDependency",name="namedDependency2"))
 class TwoNamedParametersConstructorInjectee {
 
 	var m_dependency : Clazz;
@@ -36,6 +35,7 @@ class TwoNamedParametersConstructorInjectee {
 		return m_dependency2;
 	}
 
+	@Inject("namedDependency","namedDependency2")
 	public function new(dependency : Clazz, dependency2 : String) {
 		m_dependency = dependency;
 		m_dependency2 = dependency2;

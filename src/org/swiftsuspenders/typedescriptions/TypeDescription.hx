@@ -17,23 +17,24 @@ class TypeDescription
 	//----------------------              Public Properties             ----------------------//
 	public var ctor : ConstructorInjectionPoint;
 	public var injectionPoints : InjectionPoint;
-	public var preDestroyMethods : PreDestroyInjectionPoint;
+	public var preDestroyMethods : PreDestroyInjectionPoint;	
 	//----------------------       Private / Protected Properties       ----------------------//
-		var _postConstructAdded : Bool;
+	var _postConstructAdded : Bool;
 	//----------------------               Public Methods               ----------------------//
-		public function new(useDefaultConstructor : Bool = true) {
+	
+	public function new(useDefaultConstructor : Bool = true) {
 		if(useDefaultConstructor)  {
 			ctor = new NoParamsConstructorInjectionPoint();
 		}
 	}
 
-	public function setConstructor(parameterTypes : Array<Class<Dynamic>>, parameterNames : Array<String> = null, requiredParameters : Int = MAX_INT, metadata : Dictionary = null) : TypeDescription {
+	public function setConstructor(parameterTypes : Array<Class<Dynamic>>, parameterNames : Array<String> = null, requiredParameters : Int = MAX_INT, metadata : Hash<String> = null) : TypeDescription {
 		if (parameterNames == null) parameterNames = [];
 		ctor = new ConstructorInjectionPoint(createParameterMappings(parameterTypes, parameterNames), requiredParameters, metadata);
 		return this;
 	}
 
-	public function addFieldInjection(fieldName : String, type : Class<Dynamic>, injectionName : String = "", optional : Bool = false, metadata : Dictionary = null) : TypeDescription {
+	public function addFieldInjection(fieldName : String, type : Class<Dynamic>, injectionName : String = "", optional : Bool = false, metadata : Hash<String> = null) : TypeDescription {
 		if(_postConstructAdded)  {
 			throw new InjectorError("Can\'t add injection point after post construct method");
 		}
@@ -41,7 +42,7 @@ class TypeDescription
 		return this;
 	}
 
-	public function addMethodInjection(methodName : String, parameterTypes : Array<Class<Dynamic>>, parameterNames : Array<String> = null, requiredParameters : Int = MAX_INT, optional : Bool = false, metadata : Dictionary = null) : TypeDescription {
+	public function addMethodInjection(methodName : String, parameterTypes : Array<Class<Dynamic>>, parameterNames : Array<String> = null, requiredParameters : Int = MAX_INT, optional : Bool = false, metadata : Hash<String> = null) : TypeDescription {
 		if(_postConstructAdded)  {
 			throw new InjectorError("Can\'t add injection point after post construct method");
 		}

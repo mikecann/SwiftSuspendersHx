@@ -24,12 +24,15 @@ package org.swiftsuspenders.support.injectees;
 import org.swiftsuspenders.support.types.Interface;
 import org.swiftsuspenders.support.types.Interface2;
 
-class MultipleSingletonsOfSameClassInjectee {
+class MultipleSingletonsOfSameClassInjectee 
+{
 
-	@:meta(Inject())
+	@Inject
 	public var property1 : Interface;
-	@:meta(Inject())
+	
+	@Inject
 	public var property2 : Interface2;
+	
 	public function new() {
 	}
 

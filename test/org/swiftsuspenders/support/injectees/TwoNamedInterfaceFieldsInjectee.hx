@@ -25,10 +25,12 @@ import org.swiftsuspenders.support.types.Interface;
 
 class TwoNamedInterfaceFieldsInjectee {
 
-	@:meta(Inject(name="Name1"))
+	@Inject("Name1")
 	public var property1 : Interface;
-	@:meta(Inject(name="Name2"))
+	
+	@Inject("Name2")
 	public var property2 : Interface;
+	
 	public function new() {
 	}
 

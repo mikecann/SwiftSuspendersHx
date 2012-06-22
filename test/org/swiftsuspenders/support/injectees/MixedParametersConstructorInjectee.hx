@@ -24,7 +24,6 @@ package org.swiftsuspenders.support.injectees;
 import org.swiftsuspenders.support.types.Clazz;
 import org.swiftsuspenders.support.types.Interface;
 
-@:meta(Inject(name="namedDep",name="",name="namedDep2"))
 class MixedParametersConstructorInjectee {
 
 	var m_dependency : Clazz;
@@ -42,6 +41,7 @@ class MixedParametersConstructorInjectee {
 		return m_dependency3;
 	}
 
+	@Inject("namedDep","","namedDep2")
 	public function new(dependency : Clazz, dependency2 : Clazz, dependency3 : Interface) {
 		m_dependency = dependency;
 		m_dependency2 = dependency2;

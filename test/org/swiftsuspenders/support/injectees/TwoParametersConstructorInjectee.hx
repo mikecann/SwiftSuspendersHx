@@ -35,6 +35,7 @@ class TwoParametersConstructorInjectee {
 		return m_dependency2;
 	}
 
+	@Inject
 	public function new(dependency : Clazz, dependency2 : String) {
 		m_dependency = dependency;
 		m_dependency2 = dependency2;

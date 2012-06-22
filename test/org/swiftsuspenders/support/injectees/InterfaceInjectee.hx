@@ -23,12 +23,12 @@ package org.swiftsuspenders.support.injectees;
 
 import org.swiftsuspenders.support.types.Interface;
 
-class InterfaceInjectee {
-
-	@:meta(Inject())
+class InterfaceInjectee 
+{
+	@Inject
 	public var property : Interface;
+	
 	public function new() {
 	}
-
 }
 

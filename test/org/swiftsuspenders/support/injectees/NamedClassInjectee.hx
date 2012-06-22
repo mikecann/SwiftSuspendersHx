@@ -8,10 +8,12 @@ package org.swiftsuspenders.support.injectees;
 
 import org.swiftsuspenders.support.types.Clazz;
 
-class NamedClassInjectee {
+class NamedClassInjectee 
+{
 
 	static public inline var NAME : String = "Name";
-	@:meta(Inject(name="Name"))
+	
+	@Inject("Name")
 	public var property : Clazz;
 
 	public function new() {

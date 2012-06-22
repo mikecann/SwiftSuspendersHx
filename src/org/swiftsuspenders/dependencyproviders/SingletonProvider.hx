@@ -36,7 +36,7 @@ class SingletonProvider implements DependencyProvider {
 	 * @return The same, lazily created, instance of the class given to the SingletonProvider's
 	 * constructor on each invocation
 	 */	
-	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Dictionary) : Dynamic 
+	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Hash<String>) : Dynamic 
 	{
 		if (!_response) _response = createResponse(_creatingInjector);		
 		return _response;

@@ -23,11 +23,14 @@ package org.swiftsuspenders.support.injectees;
 
 import org.swiftsuspenders.support.types.Interface;
 
-class NamedInterfaceInjectee {
+class NamedInterfaceInjectee 
+{
 
 	static public inline var NAME : String = "Name";
-	@:meta(Inject(name="Name"))
+	
+	@Inject("Name")
 	public var property : Interface;
+	
 	public function new() {
 	}
 

@@ -26,7 +26,8 @@ import org.swiftsuspenders.support.types.Clazz;
 class OneNamedParameterMethodInjectee {
 
 	var m_dependency : Clazz;
-	@:meta(Inject(name="namedDep"))
+	
+	@Inject("namedDep")
 	public function setDependency(dependency : Clazz) : Void {
 		m_dependency = dependency;
 	}

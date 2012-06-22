@@ -24,7 +24,7 @@ class OtherMappingProvider implements DependencyProvider {
 	 *
 	 * @return The result of invoking <code>apply</code> on the <code>InjectionMapping</code>
 	 * provided to this provider's constructor
-	 */	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Dictionary) : Dynamic {
+	 */	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Hash<String>) : Dynamic {
 		return _mapping.getProvider().apply(targetType, activeInjector, injectParameters);
 	}
 

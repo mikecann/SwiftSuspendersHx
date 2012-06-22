@@ -28,7 +28,8 @@ class TwoParametersMethodInjectee {
 
 	var m_dependency : Clazz;
 	var m_dependency2 : Interface;
-	@:meta(Inject())
+	
+	@Inject
 	public function setDependencies(dependency : Clazz, dependency2 : Interface) : Void {
 		m_dependency = dependency;
 		m_dependency2 = dependency2;

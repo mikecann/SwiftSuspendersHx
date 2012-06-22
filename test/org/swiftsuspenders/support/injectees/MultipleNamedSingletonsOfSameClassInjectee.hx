@@ -26,14 +26,18 @@ import org.swiftsuspenders.support.types.Interface2;
 
 class MultipleNamedSingletonsOfSameClassInjectee {
 
-	@:meta(Inject())
+	@Inject
 	public var property1 : Interface;
-	@:meta(Inject())
+	
+	@Inject
 	public var property2 : Interface2;
-	@:meta(Inject(name="name1"))
+	
+	@:Inject("name1")
 	public var namedProperty1 : Interface;
-	@:meta(Inject(name="name2"))
+	
+	@Inject("name2")
 	public var namedProperty2 : Interface2;
+	
 	public function new() {
 	}
 

@@ -12,9 +12,9 @@ import org.swiftsuspenders.Injector;
 class InjectionPoint {
 
 	//----------------------              Public Properties             ----------------------//
-		public var next : InjectionPoint;
+	public var next : InjectionPoint;
 	public var last : InjectionPoint;
-	public var injectParameters : Dictionary;
+	public var injectParameters : Hash<String>;
 	//----------------------               Public Methods               ----------------------//
 		public function new() {
 	}

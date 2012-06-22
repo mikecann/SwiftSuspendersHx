@@ -29,7 +29,8 @@ class MixedParametersMethodInjectee {
 	var m_dependency : Clazz;
 	var m_dependency2 : Clazz;
 	var m_dependency3 : Interface;
-	@:meta(Inject(name="namedDep",name="",name="namedDep2"))
+	
+	@Inject("namedDep","","namedDep2")
 	public function setDependencies(dependency : Clazz, dependency2 : Clazz, dependency3 : Interface) : Void {
 		m_dependency = dependency;
 		m_dependency2 = dependency2;

@@ -20,7 +20,7 @@ class PropertyInjectionPoint extends InjectionPoint
 	var _optional : Bool;
 	//----------------------               Public Methods               ----------------------//
 	
-	public function new(mappingId : String, propertyName : String, optional : Bool, injectParameters : Dictionary) {
+	public function new(mappingId : String, propertyName : String, optional : Bool, injectParameters : Hash<String>) {
 		_propertyName = propertyName;
 		_mappingId = mappingId;
 		_optional = optional;

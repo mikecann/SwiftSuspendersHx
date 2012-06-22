@@ -19,6 +19,6 @@ interface DependencyProvider {
 	 * invoked
 	 * @param injectParameters Dictionary containing all parameters for the current injection point
 	 * @return The result of the specific DependencyProvider's mechanism
-	 */	function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Dictionary) : Dynamic;
+	 */	function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Hash<String>) : Dynamic;
 }
 

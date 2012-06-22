@@ -27,7 +27,7 @@ class ClassProvider implements DependencyProvider
 	 * @return A new instance of the class given to the ClassProvider's constructor,
 	 * constructed using the <code>usingInjector</code>
 	 */	
-	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Dictionary) : Dynamic 
+	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Hash<String>) : Dynamic 
 	{
 		return activeInjector.instantiateUnmapped(_responseType);
 	}

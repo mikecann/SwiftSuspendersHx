@@ -23,14 +23,14 @@ package org.swiftsuspenders.support.injectees;
 
 import org.swiftsuspenders.support.types.Clazz;
 
-@:meta(Inject(name="namedDependency"))
 class OneNamedParameterConstructorInjectee {
 
 	var m_dependency : Clazz;
 	public function getDependency() : Clazz {
 		return m_dependency;
 	}
-
+	
+	@Inject("namedDependency")
 	public function new(dependency : Clazz) {
 		m_dependency = dependency;
 	}

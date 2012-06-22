@@ -12,7 +12,7 @@ import org.swiftsuspenders.Injector;
 class ConstructorInjectionPoint extends MethodInjectionPoint {
 
 	//----------------------               Public Methods               ----------------------//
-		public function new(parameters : Array<Dynamic>, requiredParameters : Int, injectParameters : Dictionary) {
+		public function new(parameters : Array<Dynamic>, requiredParameters : Int, injectParameters : Hash<String>) {
 		super("ctor", parameters, requiredParameters, false, injectParameters);
 	}
 

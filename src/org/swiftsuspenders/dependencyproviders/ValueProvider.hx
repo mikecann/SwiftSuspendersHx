@@ -22,7 +22,7 @@ class ValueProvider implements DependencyProvider {
 	 * @inheritDoc
 	 *
 	 * @return The value provided to this provider's constructor
-	 */	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Dictionary) : Dynamic {
+	 */	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Hash<String>) : Dynamic {
 		return _value;
 	}
 

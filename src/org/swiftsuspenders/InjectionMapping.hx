@@ -55,10 +55,10 @@ class InjectionMapping
 	 *
 	 * @see #toSingleton()
 	 */	
-	//public function asSingleton() : InjectionMapping {
-		//toSingleton(_type);
-		//return this;
-	//}
+	public function asSingleton() : InjectionMapping {
+		toSingleton(_type);
+		return this;
+	}
 
 	/**
 	 * Makes the mapping return a newly created instance of the given <code>type</code> for
@@ -75,10 +75,10 @@ class InjectionMapping
 	 *
 	 * @see #toProvider()
 	 */	
-	//public function toType(type : Class<Dynamic>) : InjectionMapping {
-		//toProvider(new ClassProvider(type));
-		//return this;
-	//}
+	public function toType(type : Class<Dynamic>) : InjectionMapping {
+		toProvider(new ClassProvider(type));
+		return this;
+	}
 
 	/**
 	 * Makes the mapping return a lazily constructed singleton instance of the mapped type for
@@ -96,10 +96,10 @@ class InjectionMapping
 	 *
 	 * @see #toProvider()
 	 */	
-	//public function toSingleton(type : Class<Dynamic>) : InjectionMapping {
-		//toProvider(new SingletonProvider(type, _creatingInjector));
-		//return this;
-	//}
+	public function toSingleton(type : Class<Dynamic>) : InjectionMapping {
+		toProvider(new SingletonProvider(type, _creatingInjector));
+		return this;
+	}
 
 	/**
 	 * Makes the mapping return the given value for each consecutive request.
@@ -303,14 +303,14 @@ class InjectionMapping
 	/**
 	 * @return The provider currently associated with the mapping
 	 */	
-	//public function getProvider() : DependencyProvider {
-		//var provider : DependencyProvider = _creatingInjector.providerMappings[_mappingId];
-		//while(Std.is(provider, ForwardingProvider)) {
-			//provider = cast((provider), ForwardingProvider).provider;
-		//}
-//
-		//return provider;
-	//}
+	public function getProvider() : DependencyProvider {
+		var provider : DependencyProvider = _creatingInjector.providerMappings.get(_mappingId);
+		while(Std.is(provider, ForwardingProvider)) {
+			provider = cast((provider), ForwardingProvider).provider;
+		}
+
+		return provider;
+	}
 
 	/**
 	 * Sets the Injector to supply to the mapped DependencyProvider or to query for ancestor
