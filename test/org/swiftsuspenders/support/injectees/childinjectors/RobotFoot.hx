@@ -9,6 +9,8 @@ package org.swiftsuspenders.support.injectees.childinjectors;
 class RobotFoot {
 
 	public var toes : RobotToes;
+	
+	@Inject
 	public function new(toes : RobotToes = null) {
 		this.toes = toes;
 	}

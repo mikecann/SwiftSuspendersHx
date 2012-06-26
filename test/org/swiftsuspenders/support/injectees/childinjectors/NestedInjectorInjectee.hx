@@ -10,10 +10,10 @@ import org.swiftsuspenders.Injector;
 
 class NestedInjectorInjectee {
 
-	@:meta(Inject())
+	@Inject()
 	public var injector : Injector;
 	public var nestedInjectee : NestedNestedInjectorInjectee;
-	@:meta(PostConstruct())
+	@PostConstruct()
 	public function createAnotherChildInjector() : Void {
 		nestedInjectee = injector.getInstance(NestedNestedInjectorInjectee);
 	}

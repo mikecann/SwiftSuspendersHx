@@ -159,17 +159,17 @@ class InjectionMapping
 	 *
 	 * @see #strong()
 	 */	
-	//public function soft() : InjectionMapping {
-		//_sealed && throwSealedError();
-		//if(!_soft)  {
-			//var provider : DependencyProvider = getProvider();
-			//dispatchPreChangeEvent();
-			//_soft = true;
-			//mapProvider(provider);
-			//dispatchPostChangeEvent();
-		//}
-		//return this;
-	//}
+	public function soft() : InjectionMapping {
+		if(_sealed) throwSealedError();
+		if(!_soft)  {
+			var provider = getProvider();
+			dispatchPreChangeEvent();
+			_soft = true;
+			mapProvider(provider);
+			dispatchPostChangeEvent();
+		}
+		return this;
+	}
 
 	/**
 	 * Reverts the effect of <code>soft()</code> and makes the Injector the mapping is defined
@@ -202,18 +202,18 @@ class InjectionMapping
 	 *
 	 * @see #shared()
 	 */	
-	//public function local() : InjectionMapping {
-		//_sealed && throwSealedError();
-		//if(_local)  {
-			//return this;
-		//}
-		//var provider : DependencyProvider = getProvider();
-		//dispatchPreChangeEvent();
-		//_local = true;
-		//mapProvider(provider);
-		//dispatchPostChangeEvent();
-		//return this;
-	//}
+	public function local() : InjectionMapping {
+		if(_sealed) throwSealedError();
+		if(_local)  {
+			return this;
+		}
+		var provider : DependencyProvider = getProvider();
+		dispatchPreChangeEvent();
+		_local = true;
+		mapProvider(provider);
+		dispatchPostChangeEvent();
+		return this;
+	}
 
 	/**
 	 * Reverts the effect of <code>local</code>, enables sharing the mapping with child
@@ -225,18 +225,18 @@ class InjectionMapping
 	 *
 	 * @see #local()
 	 */	
-	//public function shared() : InjectionMapping {
-		//_sealed && throwSealedError();
-		//if(!_local)  {
-			//return this;
-		//}
-		//var provider : DependencyProvider = getProvider();
-		//dispatchPreChangeEvent();
-		//_local = false;
-		//mapProvider(provider);
-		//dispatchPostChangeEvent();
-		//return this;
-	//}
+	public function shared() : InjectionMapping {
+		if(_sealed) throwSealedError();
+		if(!_local)  {
+			return this;
+		}
+		var provider = getProvider();
+		dispatchPreChangeEvent();
+		_local = false;
+		mapProvider(provider);
+		dispatchPostChangeEvent();
+		return this;
+	}
 
 	/**
 	 * Prevents all subsequent changes to the mapping, including removal. Trying to change it
@@ -325,16 +325,16 @@ class InjectionMapping
 	 *
 	 * @return The <code>InjectionMapping</code> the method is invoked on
 	 */	
-	//public function setInjector(injector : Injector) : InjectionMapping {
-		//_sealed && throwSealedError();
-		//if(injector == _overridingInjector)  {
-			//return this;
-		//}
-		//var provider : DependencyProvider = getProvider();
-		//_overridingInjector = injector;
-		//mapProvider(provider);
-		//return this;
-	//}
+	public function setInjector(injector : Injector) : InjectionMapping {
+		if(_sealed) throwSealedError();
+		if(injector == _overridingInjector)  {
+			return this;
+		}
+		var provider = getProvider();
+		_overridingInjector = injector;
+		mapProvider(provider);
+		return this;
+	}
 
 	//----------------------         Private / Protected Methods        ----------------------//
 	function mapProvider(provider : DependencyProvider) : Void {

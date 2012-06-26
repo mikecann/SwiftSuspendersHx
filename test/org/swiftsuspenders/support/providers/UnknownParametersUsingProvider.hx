@@ -14,9 +14,9 @@ import org.swiftsuspenders.support.types.Clazz;
 class UnknownParametersUsingProvider implements DependencyProvider {
 
 	//----------------------              Public Properties             ----------------------//
-		public var parameterValue : String;
+	public var parameterValue : String;
 	//----------------------               Public Methods               ----------------------//
-		public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Dictionary) : Dynamic {
+	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Hash<String>) : Dynamic {
 		parameterValue = injectParameters.param;
 		return new Clazz();
 	}

@@ -9,26 +9,26 @@ package org.swiftsuspenders.support.injectees;
 class OrderedPostConstructInjectee {
 
 	public var loadOrder : Array<Dynamic>;
-	@:meta(PostConstruct(order=2))
+	
+	//@PostConstruct(order=2)
 	public function methodTwo() : Void {
 		loadOrder.push(2);
 	}
 
-	@:meta(PostConstruct())
+	@PostConstruct()
 	public function methodFour() : Void {
 		loadOrder.push(4);
 	}
 
-	@:meta(PostConstruct(order=3))
+	//@PostConstruct(order=3)
 	public function methodThree() : Void {
 		loadOrder.push(3);
 	}
 
-	@:meta(PostConstruct(order=1))
+	//@PostConstruct(order=1)
 	public function methodOne() : Void {
 		loadOrder.push(1);
 	}
-
 
 	public function new() {
 		loadOrder = [];

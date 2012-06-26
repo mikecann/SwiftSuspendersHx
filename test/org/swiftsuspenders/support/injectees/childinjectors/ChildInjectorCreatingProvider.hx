@@ -12,11 +12,10 @@ import org.swiftsuspenders.dependencyproviders.DependencyProvider;
 
 class ChildInjectorCreatingProvider implements DependencyProvider {
 
-	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Dictionary) : Dynamic {
+	public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Hash<String>) : Dynamic {
 		return activeInjector.createChildInjector();
 	}
-
-
+	
 	public function new() {
 	}
 }

@@ -11,11 +11,11 @@ import org.swiftsuspenders.support.types.Clazz;
 class PostConstructWithArgInjectee {
 
 	public var property : Clazz;
-	@:meta(PostConstruct())
+	
+	@PostConstruct
 	public function doSomeStuff(arg : Clazz) : Void {
 		property = arg;
 	}
-
 
 	public function new() {
 	}

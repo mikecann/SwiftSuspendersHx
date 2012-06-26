@@ -8,7 +8,7 @@ package org.swiftsuspenders.support.injectees.childinjectors;
 
 class RobotLeg {
 
-	@:meta(Inject())
+	@Inject()
 	public var ankle : RobotAnkle;
 
 	public function new() {

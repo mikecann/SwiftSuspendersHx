@@ -2,6 +2,9 @@ package ;
 import flash.Lib;
 import haxe.Log;
 import haxe.unit.TestRunner;
+import org.swiftsuspenders.ChildInjectorTests;
+import org.swiftsuspenders.DependencyProviderTests;
+import org.swiftsuspenders.InjectionResultTests;
 import org.swiftsuspenders.InjectorTests;
 
 /**
@@ -15,7 +18,9 @@ class Main {
 
         var r = new TestRunner();
         r.add(new InjectorTests());
-        // your can add others TestCase here
+        r.add(new ChildInjectorTests());
+        r.add(new DependencyProviderTests());
+        //r.add(new InjectionResultTests());
 
         // finally, run the tests
         r.run();

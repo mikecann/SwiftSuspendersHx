@@ -8,9 +8,10 @@ package org.swiftsuspenders.support.injectees.childinjectors;
 
 class RobotBody {
 
-	@:meta(Inject(name="leftLeg"))
+	@Inject("leftLeg")
 	public var leftLeg : RobotLeg;
-	@:meta(Inject(name="rightLeg"))
+	
+	@Inject("rightLeg")
 	public var rightLeg : RobotLeg;
 
 	public function new() {

@@ -21,6 +21,10 @@ import org.swiftsuspenders.support.injectees.OneNamedParameterConstructorInjecte
 import org.swiftsuspenders.support.injectees.OneNamedParameterMethodInjectee;
 import org.swiftsuspenders.support.injectees.OneParameterConstructorInjectee;
 import org.swiftsuspenders.support.injectees.OneParameterMethodInjectee;
+import org.swiftsuspenders.support.injectees.OptionalClassInjectee;
+import org.swiftsuspenders.support.injectees.OptionalOneRequiredParameterMethodInjectee;
+import org.swiftsuspenders.support.injectees.OrderedPostConstructInjectee;
+import org.swiftsuspenders.support.injectees.PostConstructWithArgInjectee;
 import org.swiftsuspenders.support.injectees.RecursiveInterfaceInjectee;
 import org.swiftsuspenders.support.injectees.SetterInjectee;
 import org.swiftsuspenders.support.injectees.StringInjectee;
@@ -29,11 +33,13 @@ import org.swiftsuspenders.support.injectees.TwoNamedParametersConstructorInject
 import org.swiftsuspenders.support.injectees.TwoNamedParametersMethodInjectee;
 import org.swiftsuspenders.support.injectees.TwoParametersConstructorInjectee;
 import org.swiftsuspenders.support.injectees.TwoParametersMethodInjectee;
+import org.swiftsuspenders.support.injectees.UnknownInjectParametersListInjectee;
 import org.swiftsuspenders.support.types.Clazz;
 import org.swiftsuspenders.support.types.Clazz2;
 import org.swiftsuspenders.support.types.ComplexClazz;
 import org.swiftsuspenders.support.types.Interface;
 import org.swiftsuspenders.support.types.Interface2;
+import org.swiftsuspenders.typedescriptions.TypeDescription;
 
 class InjectorTests extends TestCase
 {	
@@ -382,172 +388,182 @@ class InjectorTests extends TestCase
 
 	public function testHaltOnMissingDependency() : Void 
 	{
-		var errorThrown = false;
-		try
+		var errThrown = false;
+		try 
 		{
-			var injectee : InterfaceInjectee = new InterfaceInjectee();
+			var injectee = new InterfaceInjectee();
 			injector.injectInto(injectee);
-		}
-		catch (e:Dynamic) { errorThrown = true; }
-		assertTrue(errorThrown);
+		}catch (e:Dynamic) { errThrown = true; }
+		assertTrue(errThrown);		
 	}
 
 	public function testHaltOnMissingNamedDependency() : Void 
-	{		
-		var errorThrown = false;
-		try
+	{	
+		var errThrown = false;
+		try 
 		{
-			var injectee : NamedClassInjectee = new NamedClassInjectee();
+			var injectee = new NamedClassInjectee();
 			injector.injectInto(injectee);
-		}
-		catch (e:Dynamic) { errorThrown = true; }
-		assertTrue(errorThrown);
+		}catch (e:Dynamic) { errThrown = true; }
+		assertTrue(errThrown);
 	}
 
-	//public function testPostConstructIsCalled() : Void 
-	//{
-		//var injectee : ClassInjectee = new ClassInjectee();
-		//var value : Clazz = new Clazz();
-		//injector.map(Clazz).toValue(value);
-		//injector.injectInto(injectee);
-		//Assert.assertTrue(injectee.someProperty);
-	//}
-//
-	//public function testPostConstructWithArgIsCalledCorrectly() : Void 
-	//{
-		//injector.map(Clazz);
-		//var injectee : PostConstructWithArgInjectee = injector.getInstance(PostConstructWithArgInjectee);
-		//assertThat(injectee.property, isA(Clazz));
-	//}
-//
+	public function testPostConstructIsCalled() : Void 
+	{
+		var injectee = new ClassInjectee();
+		var value = new Clazz();
+		injector.map(Clazz).toValue(value);
+		injector.injectInto(injectee);
+		assertTrue(injectee.someProperty);
+	}
+
+	public function testPostConstructWithArgIsCalledCorrectly() : Void 
+	{
+		injector.map(Clazz);
+		var injectee = injector.getInstance(PostConstructWithArgInjectee);
+		assertTrue(Std.is(injectee.property, Clazz));
+	}
+
 	//public function testPostConstructMethodsCalledAsOrdered() : Void
 	//{
-		//var injectee : OrderedPostConstructInjectee = new OrderedPostConstructInjectee();
+		//var injectee = new OrderedPostConstructInjectee();
 		//injector.injectInto(injectee);
-		//assertThat(injectee.loadOrder, array(1, 2, 3, 4));
+		//assertTrue(injectee.loadOrder==[1,2,3,4]);
 	//}
-//
-	//public function testHasMappingFailsForUnmappedUnnamedClass() : Void 
-	//{
-		//Assert.assertFalse(injector.satisfies(Clazz));
-	//}
-//
-	//public function testHasMappingFailsForUnmappedNamedClass() : Void 
-	//{
-		//Assert.assertFalse(injector.satisfies(Clazz, "namedClass"));
-	//}
-//
-	//public function testHasMappingSucceedsForMappedUnnamedClass() : Void 
-	//{
-		//injector.map(Clazz).toType(Clazz);
-		//Assert.assertTrue(injector.satisfies(Clazz));
-	//}
-//
-	//public function testHasMappingSucceedsForMappedNamedClass() : Void 
-	//{
-		//injector.map(Clazz, "namedClass").toType(Clazz);
-		//Assert.assertTrue(injector.satisfies(Clazz, "namedClass"));
-	//}
-//
-	//@:meta(Test(expects="org.swiftsuspenders.InjectorError"))
-	//public function testGetMappingResponseFailsForUnmappedNamedClass() : Void 
-	//{
-		//Assert.assertNull(injector.getInstance(Clazz, "namedClass"));
-	//}
-//
-	//public function testGetMappingResponseSucceedsForMappedUnnamedClass() : Void 
-	//{
-		//var clazz : Clazz = new Clazz();
-		//injector.map(Clazz).toValue(clazz);
-		//Assert.assertObjectEquals(injector.getInstance(Clazz), clazz);
-	//}
-//
-	//public function testGetMappingResponseSucceedsForMappedNamedClass() : Void 
-	//{
-		//var clazz : Clazz = new Clazz();
-		//injector.map(Clazz, "namedClass").toValue(clazz);
-		//Assert.assertObjectEquals(injector.getInstance(Clazz, "namedClass"), clazz);
-	//}
-//
-	//public function testInjectorRemovesSingletonInstanceOnMappingRemoval() : Void 
-	//{
-		//injector.map(Clazz).toSingleton(Clazz);
-		//var injectee1 : ClassInjectee = injector.getInstance(ClassInjectee);
-		//injector.unmap(Clazz);
-		//injector.map(Clazz).toSingleton(Clazz);
-		//var injectee2 : ClassInjectee = injector.getInstance(ClassInjectee);
-		//Assert.assertFalse("injectee1.property is not the same instance as injectee2.property", injectee1.property == injectee2.property);
-	//}
-//
-	//@:meta(Test(expects="org.swiftsuspenders.InjectorError"))
-	//public function testInstantiateThrowsMeaningfulErrorOnInterfaceInstantiation() : Void 
-	//{
-		//injector.getInstance(Interface);
-	//}
-//
-	//public function testInjectorDoesntThrowWhenAttemptingUnmappedOptionalPropertyInjection() : Void 
-	//{
-		//var injectee : OptionalClassInjectee = injector.getInstance(OptionalClassInjectee);
-		//Assert.assertNull("injectee mustn\'t contain Clazz instance", injectee.property);
-	//}
-//
-	//public function testInjectorDoesntThrowWhenAttemptingUnmappedOptionalMethodInjection() : Void 
-	//{
-		//var injectee : OptionalOneRequiredParameterMethodInjectee = injector.getInstance(OptionalOneRequiredParameterMethodInjectee);
-		//Assert.assertNull("injectee mustn\'t contain Clazz instance", injectee.getDependency());
-	//}
-//
-	//public function testSoftMappingIsUsedIfNoParentInjectorAvailable() : Void 
-	//{
-		//injector.map(Interface).toType(Clazz).soft();
-		//Assert.assertNotNull(injector.getInstance(Interface));
-	//}
-//
-	//public function testParentMappingIsUsedInsteadOfSoftChildMapping() : Void 
-	//{
-		//var childInjector : Injector = injector.createChildInjector();
-		//injector.map(Interface).toType(Clazz);
-		//childInjector.map(Interface).toType(Clazz2).soft();
-		//Assert.assertEquals(Clazz, childInjector.getInstance(Interface)["constructor"]);
-	//}
-//
+
+	public function satisfiesSucceedsForUnmappedUnnamedClass() : Void 
+	{
+		assertTrue(injector.satisfies(Clazz));
+	}
+
+	public function testHasMappingFailsForUnmappedNamedClass() : Void 
+	{
+		assertFalse(injector.satisfies(Clazz, "namedClass"));
+	}
+
+	public function testHasMappingSucceedsForMappedUnnamedClass() : Void 
+	{
+		injector.map(Clazz).toType(Clazz);
+		assertTrue(injector.satisfies(Clazz));
+	}
+
+	public function testHasMappingSucceedsForMappedNamedClass() : Void 
+	{
+		injector.map(Clazz, "namedClass").toType(Clazz);
+		assertTrue(injector.satisfies(Clazz, "namedClass"));
+	}
+	
+	public function testGetMappingResponseFailsForUnmappedNamedClass() : Void 
+	{
+		var errThrown = false;
+		try 
+		{
+			injector.getInstance(Clazz, "namedClass");
+		}catch (e:Dynamic) { errThrown = true; }
+		assertTrue(errThrown);	
+	}	
+
+	public function testGetMappingResponseSucceedsForMappedUnnamedClass() : Void 
+	{
+		var clazz = new Clazz();
+		injector.map(Clazz).toValue(clazz);
+		assertTrue(injector.getInstance(Clazz)==clazz);
+	}
+
+	public function testGetMappingResponseSucceedsForMappedNamedClass() : Void 
+	{
+		var clazz = new Clazz();
+		injector.map(Clazz, "namedClass").toValue(clazz);
+		assertTrue(injector.getInstance(Clazz, "namedClass")==clazz);
+	}
+
+	public function testInjectorRemovesSingletonInstanceOnMappingRemoval() : Void 
+	{
+		injector.map(Clazz).toSingleton(Clazz);
+		var injectee1 = injector.getInstance(ClassInjectee);
+		injector.unmap(Clazz);
+		injector.map(Clazz).toSingleton(Clazz);
+		var injectee2 : ClassInjectee = injector.getInstance(ClassInjectee);
+		assertTrue(injectee1.property != injectee2.property); // injectee1.property is not the same instance as injectee2.property
+	}
+
+	public function testInstantiateThrowsMeaningfulErrorOnInterfaceInstantiation() : Void 
+	{
+		var errThrown = false;
+		try 
+		{
+			injector.getInstance(Interface);
+		}catch (e:Dynamic) { errThrown = true; }
+		assertTrue(errThrown);			
+	}
+
+	public function testInjectorDoesntThrowWhenAttemptingUnmappedOptionalPropertyInjection() : Void 
+	{
+		var injectee = injector.getInstance(OptionalClassInjectee);
+		assertTrue(injectee.property == null); // injectee mustn\'t contain Clazz instance
+	}
+
+	public function testInjectorDoesntThrowWhenAttemptingUnmappedOptionalMethodInjection() : Void 
+	{
+		var injectee = injector.getInstance(OptionalOneRequiredParameterMethodInjectee);
+		assertTrue(injectee.getDependency() == null); // injectee mustn\'t contain Clazz instance
+	}
+
+	public function testSoftMappingIsUsedIfNoParentInjectorAvailable() : Void 
+	{
+		injector.map(Interface).toType(Clazz).soft();
+		assertTrue(injector.getInstance(Interface)!=null);
+	}
+
+	public function testParentMappingIsUsedInsteadOfSoftChildMapping() : Void 
+	{
+		var childInjector = injector.createChildInjector();
+		injector.map(Interface).toType(Clazz);
+		childInjector.map(Interface).toType(Clazz2).soft();
+		assertTrue(Std.is(childInjector.getInstance(Interface),Clazz));
+	}
+
 	//public function testCallingStrongTurnsSoftMappingsIntoStrongOnes() : Void 
 	//{
-		//var childInjector : Injector = injector.createChildInjector();
+		//var childInjector = injector.createChildInjector();
 		//injector.map(Interface).toType(Clazz);
-		//childInjector.map(Interface).toType(Clazz2).soft();
-		//Assert.assertEquals(Clazz, childInjector.getInstance(Interface)["constructor"]);
-		//childInjector.map(Interface).toType(Clazz2).strong();
-		//Assert.assertEquals(Clazz2, childInjector.getInstance(Interface)["constructor"]);
+		//childInjector.map(Interface).softly().toType(Clazz2);
+		//assertTrue(Std.is(childInjector.getInstance(Interface),Clazz)); // Assert.assertEquals(Clazz, childInjector.getInstance(Interface)["constructor"]);		
+		//childInjector.map(Interface).strongly().toType(Clazz2);
+		//assertTrue(childInjector.getInstance(Interface,Std.is(Clazz2)); // Assert.assertEquals(Clazz2, childInjector.getInstance(Interface)["constructor"]);		
 	//}
-//
-	//public function testLocalMappingsAreUsedInOwnInjector() : Void
-	//{
-		//injector.map(Interface).toType(Clazz).local();
-		//Assert.assertNotNull(injector.getInstance(Interface));
-	//}
-//
-	//@:meta(Test(expects="org.swiftsuspenders.InjectorError"))
-	//public function testLocalMappingsArentSharedWithChildInjectors() : Void 
-	//{
-		//var childInjector : Injector = injector.createChildInjector();
-		//injector.map(Interface).toType(Clazz).local();
-		//childInjector.getInstance(Interface);
-	//}
-//
-	//public function testCallingSharedTurnsLocalMappingsIntoSharedOnes() : Void 
-	//{
-		//var childInjector : Injector = injector.createChildInjector();
-		//injector.map(Interface).toType(Clazz).local();
-		//injector.map(Interface).toType(Clazz).shared();
-		//Assert.assertNotNull(childInjector.getInstance(Interface));
-	//}
-//
+
+	public function testLocalMappingsAreUsedInOwnInjector() : Void
+	{
+		injector.map(Interface).toType(Clazz).local();
+		assertTrue(injector.getInstance(Interface)!=null);
+	}
+
+	public function testLocalMappingsArentSharedWithChildInjectors() : Void 
+	{
+		var errThrown = false;
+		try 
+		{
+			var childInjector : Injector = injector.createChildInjector();
+			injector.map(Interface).toType(Clazz).local();
+			childInjector.getInstance(Interface);
+		}catch (e:Dynamic) { errThrown = true; }
+		assertTrue(errThrown);
+	}
+
+	public function testCallingSharedTurnsLocalMappingsIntoSharedOnes() : Void 
+	{
+		var childInjector = injector.createChildInjector();
+		injector.map(Interface).toType(Clazz).local();
+		injector.map(Interface).toType(Clazz).shared();
+		assertTrue(childInjector.getInstance(Interface)!=null);
+	}
+
 	//public function testInjectorDispatchesPostInstantiateEventDuringInstanceConstruction() : Void 
 	//{
-		//assertThat(constructMappedTypeAndListenForEvent(InjectionEvent.POST_INSTANTIATE), isTrue());
+		//assertTrue(constructMappedTypeAndListenForEvent(InjectionEvent.POST_INSTANTIATE));
 	//}
-//
+
 	//public function testInjectorDispatchesPreConstructEventDuringInstanceConstruction() : Void 
 	//{
 		//assertThat(constructMappedTypeAndListenForEvent(InjectionEvent.PRE_CONSTRUCT), isTrue());
@@ -557,7 +573,7 @@ class InjectorTests extends TestCase
 	//{
 		//assertThat(constructMappedTypeAndListenForEvent(InjectionEvent.POST_CONSTRUCT), isTrue());
 	//}
-//
+
 	//public function testInjectorEventsAfterInstantiateContainCreatedInstance() : Void 
 	//{
 		//function listener(event : InjectionEvent) : Void {
@@ -570,7 +586,7 @@ class InjectorTests extends TestCase
 		//injector.addEventListener(InjectionEvent.POST_CONSTRUCT, listener);
 		//var instance : Clazz = injector.getInstance(Clazz);
 	//}
-//
+
 	//public function testInjectIntoDispatchesPreConstructEventDuringObjectConstruction() : Void
 	//{
 		//assertThat(injectIntoInstanceAndListenForEvent(InjectionEvent.PRE_CONSTRUCT), isTrue());
@@ -710,45 +726,45 @@ class InjectorTests extends TestCase
 			//receivedInjectorEvents.push(event.type);
 		//});
 	//}
-//
+
 	//public function testInjectorMakesInjectParametersAvailableToProviders() : Void 
 	//{
-		//var provider : UnknownParametersUsingProvider = new UnknownParametersUsingProvider();
+		//var provider = new UnknownParametersUsingProvider();
 		//injector.map(Clazz).toProvider(provider);
 		//injector.getInstance(UnknownInjectParametersListInjectee);
-		//assertThat(provider.parameterValue, equalTo("true,str,123"));
+		//assertTrue(provider.parameterValue=="true,str,123");
 	//}
-//
-	//public function testInjectorUsesManuallySuppliedTypeDescriptionForField() : Void 
-	//{
-		//var description : TypeDescription = new TypeDescription();
-		//description.addFieldInjection("property", Clazz);
-		//injector.addTypeDescription(NamedClassInjectee, description);
-		//injector.map(Clazz);
-		//var injectee : NamedClassInjectee = injector.getInstance(NamedClassInjectee);
-		//assertThat(injectee.property, isA(Clazz));
-	//}
-//
+
+	public function testInjectorUsesManuallySuppliedTypeDescriptionForField() : Void 
+	{
+		var description = new TypeDescription();
+		description.addFieldInjection("property", Clazz);
+		injector.addTypeDescription(NamedClassInjectee, description);
+		injector.map(Clazz);
+		var injectee = injector.getInstance(NamedClassInjectee);
+		assertTrue(injectee.property!=null);
+	}
+
 	//public function testInjectorUsesManuallySuppliedTypeDescriptionForMethod() : Void 
 	//{
-		//var description : TypeDescription = new TypeDescription();
-		//description.addMethodInjection("setDependency", [Clazz]);
+		//var description = new TypeDescription();
+		//description.addMethodInjection("setDependency", [Clazz] , ["namedDep"], 1);
 		//injector.addTypeDescription(OneNamedParameterMethodInjectee, description);
 		//injector.map(Clazz);
-		//var injectee : OneNamedParameterMethodInjectee = injector.getInstance(OneNamedParameterMethodInjectee);
-		//assertThat(injectee.getDependency(), isA(Clazz));
+		//var injectee = injector.getInstance(OneNamedParameterMethodInjectee);
+		//assertTrue(injectee.getDependency()!=null); // assertThat(injectee.getDependency(), isA(Clazz));		
 	//}
-//
+
 	//public function testInjectorUsesManuallySuppliedTypeDescriptionForCtor() : Void 
 	//{
-		//var description : TypeDescription = new TypeDescription(false);
+		//var description = new TypeDescription(false);
 		//description.setConstructor([Clazz]);
 		//injector.addTypeDescription(OneNamedParameterConstructorInjectee, description);
 		//injector.map(Clazz);
-		//var injectee : OneNamedParameterConstructorInjectee = injector.getInstance(OneNamedParameterConstructorInjectee);
-		//assertThat(injectee.getDependency(), isA(Clazz));
+		//var injectee = injector.getInstance(OneNamedParameterConstructorInjectee);
+		//assertTrue(Std.is(injectee.getDependency(),Class)); // assertThat(injectee.getDependency(), isA(Clazz));		
 	//}
-//
+
 	//public function testInjectorUsesManuallySuppliedTypeDescriptionForPostConstructMethod() : Void
 	//{
 		//var description : TypeDescription = new TypeDescription();
@@ -769,7 +785,7 @@ class InjectorTests extends TestCase
 		//injector.getInstance(PostConstructInjectedVarInjectee);
 		//assertThat(callbackInvoked, isTrue());
 	//}
-//
+
 	//public function testInjectorExecutesInjectedPostConstructMethodVarsInInjecteeScope() : Void 
 	//{
 		//injector.map(Function).toValue(function() : Void {

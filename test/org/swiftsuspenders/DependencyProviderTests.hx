@@ -6,7 +6,7 @@
  */
 package org.swiftsuspenders;
 
-import flexunit.framework.Assert;
+import haxe.unit.TestCase;
 import org.swiftsuspenders.dependencyproviders.ClassProvider;
 import org.swiftsuspenders.dependencyproviders.OtherMappingProvider;
 import org.swiftsuspenders.dependencyproviders.SingletonProvider;
@@ -15,80 +15,70 @@ import org.swiftsuspenders.support.injectees.ClassInjectee;
 import org.swiftsuspenders.support.providers.ClassNameStoringProvider;
 import org.swiftsuspenders.support.types.Clazz;
 import org.swiftsuspenders.support.types.ClazzExtension;
-import org.swiftsuspenders.utils.SsInternal;
 
-class DependencyProviderTests {
+class DependencyProviderTests extends TestCase
+{
 
 	var injector : Injector;
-	@:meta(Before())
-	public function setup() : Void {
+	
+	override public function setup() 
+	{ 
 		injector = new Injector();
 	}
 
-	@:meta(After())
-	public function teardown() : Void {
-		Injector.SsInternal::purgeInjectionPointsCache();
+	override public function tearDown() 
+	{     
+		Injector.purgeInjectionPointsCache();
 		injector = null;
 	}
 
-	@:meta(Test())
-	public function valueProviderReturnsSetValue() : Void {
-		var response : Clazz = new Clazz();
-		var provider : ValueProvider = new ValueProvider(response);
+	public function testValueProviderReturnsSetValue() : Void {
+		var response = new Clazz();
+		var provider = new ValueProvider(response);
 		var returnedResponse : Dynamic = provider.apply(null, injector, null);
-		Assert.assertStrictlyEquals(response, returnedResponse);
+		assertTrue(response==returnedResponse);
 	}
 
-	@:meta(Test())
-	public function classProviderReturnsClassInstance() : Void {
-		var classProvider : ClassProvider = new ClassProvider(Clazz);
+	public function testClassProviderReturnsClassInstance() : Void {
+		var classProvider = new ClassProvider(Clazz);
 		var returnedResponse : Dynamic = classProvider.apply(null, injector, null);
-		Assert.assertTrue(Std.is(returnedResponse, Clazz));
+		assertTrue(Std.is(returnedResponse, Clazz));
 	}
 
-	@:meta(Test())
-	public function classProviderReturnsDifferentInstancesOnEachApply() : Void {
-		var classProvider : ClassProvider = new ClassProvider(Clazz);
-		var firstResponse : Dynamic = classProvider.apply(null, injector, null);
-		var secondResponse : Dynamic = classProvider.apply(null, injector, null);
-		Assert.assertFalse(firstResponse == secondResponse);
+	public function testClassProviderReturnsDifferentInstancesOnEachApply() : Void {
+		var classProvider = new ClassProvider(Clazz);
+		var firstResponse = classProvider.apply(null, injector, null);
+		var secondResponse = classProvider.apply(null, injector, null);
+		assertFalse(firstResponse == secondResponse);
 	}
 
-	@:meta(Test())
-	public function singletonProviderReturnsInstance() : Void {
+	public function testSingletonProviderReturnsInstance() : Void {
 		var singletonProvider : SingletonProvider = new SingletonProvider(Clazz, injector);
 		var returnedResponse : Dynamic = singletonProvider.apply(null, injector, null);
-		Assert.assertTrue(Std.is(returnedResponse, Clazz));
+		assertTrue(Std.is(returnedResponse, Clazz));
 	}
 
-	@:meta(Test())
-	public function sameSingletonIsReturnedOnSecondResponse() : Void {
-		var singletonProvider : SingletonProvider = new SingletonProvider(Clazz, injector);
-		var returnedResponse : Dynamic = singletonProvider.apply(null, injector, null);
-		var secondResponse : Dynamic = singletonProvider.apply(null, injector, null);
-		Assert.assertStrictlyEquals(returnedResponse, secondResponse);
+	public function testSameSingletonIsReturnedOnSecondResponse() : Void {
+		var singletonProvider = new SingletonProvider(Clazz, injector);
+		var returnedResponse = singletonProvider.apply(null, injector, null);
+		var secondResponse = singletonProvider.apply(null, injector, null);
+		assertTrue(returnedResponse==secondResponse);
 	}
 
-	@:meta(Test())
-	public function injectionTypeOtherMappingReturnsOtherMappingsResponse() : Void {
-		var otherConfig : InjectionMapping = new InjectionMapping(injector, ClazzExtension, "", "");
+	public function testInjectionTypeOtherMappingReturnsOtherMappingsResponse() : Void {
+		var otherConfig = new InjectionMapping(injector, ClazzExtension, "", "");
 		otherConfig.toProvider(new ClassProvider(ClazzExtension));
 		var otherMappingProvider : OtherMappingProvider = new OtherMappingProvider(otherConfig);
-		var returnedResponse : Dynamic = otherMappingProvider.apply(null, injector, null);
-		Assert.assertTrue(Std.is(returnedResponse, Clazz));
-		Assert.assertTrue(Std.is(returnedResponse, ClazzExtension));
+		var returnedResponse = otherMappingProvider.apply(null, injector, null);
+		assertTrue(Std.is(returnedResponse, Clazz));
+		assertTrue(Std.is(returnedResponse, ClazzExtension));
 	}
 
-	@:meta(Test())
-	public function dependencyProviderHasAccessToTargetType() : Void {
-		var provider : ClassNameStoringProvider = new ClassNameStoringProvider();
+	public function testDependencyProviderHasAccessToTargetType() : Void {
+		var provider = new ClassNameStoringProvider();
 		injector.map(Clazz).toProvider(provider);
 		injector.getInstance(ClassInjectee);
-		Assert.assertEquals("className stored in provider is fqn of ClassInjectee", Type.getClassName(ClassInjectee), provider.lastTargetClassName);
-	}
-
-
-	public function new() {
-	}
+		assertTrue(Type.getClassName(ClassInjectee)==provider.lastTargetClassName); // className stored in provider is fqn of ClassInjectee
+	}	
 }
 

@@ -16,7 +16,7 @@ class ClassNameStoringProvider implements DependencyProvider {
 	//----------------------              Public Properties             ----------------------//
 		public var lastTargetClassName : String;
 	//----------------------               Public Methods               ----------------------//
-		public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Dictionary) : Dynamic {
+		public function apply(targetType : Class<Dynamic>, activeInjector : Injector, injectParameters : Hash<String>) : Dynamic {
 		lastTargetClassName = Type.getClassName(targetType);
 		return new Clazz();
 	}

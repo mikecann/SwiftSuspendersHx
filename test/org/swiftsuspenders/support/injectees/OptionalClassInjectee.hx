@@ -10,7 +10,7 @@ import org.swiftsuspenders.support.types.Clazz;
 
 class OptionalClassInjectee {
 
-	@:meta(Inject(optional=true))
+	@OptionalInject
 	public var property : Clazz;
 
 	public function new() {

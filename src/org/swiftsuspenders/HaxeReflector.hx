@@ -5,6 +5,7 @@ import org.swiftsuspenders.typedescriptions.ConstructorInjectionPoint;
 import org.swiftsuspenders.typedescriptions.InjectionPoint;
 import org.swiftsuspenders.typedescriptions.MethodInjectionPoint;
 import org.swiftsuspenders.typedescriptions.NoParamsConstructorInjectionPoint;
+import org.swiftsuspenders.typedescriptions.PostConstructInjectionPoint;
 import org.swiftsuspenders.typedescriptions.PropertyInjectionPoint;
 import org.swiftsuspenders.typedescriptions.TypeDescription;
 
@@ -40,7 +41,7 @@ class HaxeReflector extends ReflectorBase, implements Reflector
 			var fieldMeta:Dynamic = Reflect.field(fieldsMeta, field);
 			
 			var hasInject = Reflect.hasField(fieldMeta, "Inject");
-			var post = Reflect.hasField(fieldMeta, "PostConstruct");
+			var hasPostconstruct = Reflect.hasField(fieldMeta, "PostConstruct");
 			var args = Reflect.field(fieldMeta, "args");
 			
 			if (field == "_") // constructor
@@ -89,10 +90,13 @@ class HaxeReflector extends ReflectorBase, implements Reflector
 					//var injectionPoint = new MethodInjectionPoint(fieldMeta, this);
 					//description.addInjectionPoint(injectionPoint);
 				}
-				else if (post) // post construction
+				else if (hasPostconstruct) // post construction
 				{
-					//var injectionPoint = new PostConstructInjectionPoint(fieldMeta, this);
-					//postConstructMethodPoints.push(injectionPoint);
+					var parameters : Array<String> = [];
+					var requiredParameters : Int = gatherMethodParameters(fieldMeta,parameters);
+					
+					var injectionPoint = new PostConstructInjectionPoint(fieldMeta.name[0], parameters, requiredParameters, 0);
+					description.addInjectionPoint(injectionPoint);
 				}
 			}
 			else if (type != null && hasInject) // property
@@ -252,32 +256,36 @@ class HaxeReflector extends ReflectorBase, implements Reflector
 		if (nameArgs == null) nameArgs = [];
 
 		var i = 0;
-		for (arg in args)
+		
+		if (args != null)
 		{
-			var injectionName = "";
-
-			if (i < nameArgs.length)
+			for (arg in args)
 			{
-				injectionName = nameArgs[i];
-			}
+				var injectionName = "";
 
-			var parameterTypeName = arg.type;
-
-			if (arg.opt)
-			{
-				if (parameterTypeName == "Dynamic")
+				if (i < nameArgs.length)
 				{
-					//TODO: Find a way to trace name of affected class here
-					throw new InjectorError('Error in method definition of injectee. Required parameters can\'t have non class type.');
+					injectionName = nameArgs[i];
 				}
+
+				var parameterTypeName = arg.type;
+
+				if (arg.opt)
+				{
+					if (parameterTypeName == "Dynamic")
+					{
+						//TODO: Find a way to trace name of affected class here
+						throw new InjectorError('Error in method definition of injectee. Required parameters can\'t have non class type.');
+					}
+				}
+				else
+				{
+					requiredParameters++;
+				}
+				
+				parameters.push(parameterTypeName + "|" + injectionName); //_parameterInjectionConfigs.push(new ParameterInjectionConfig(parameterTypeName, injectionName));
+				i++;
 			}
-			else
-			{
-				requiredParameters++;
-			}
-			
-			parameters.push(parameterTypeName + "|" + injectionName); //_parameterInjectionConfigs.push(new ParameterInjectionConfig(parameterTypeName, injectionName));
-			i++;
 		}
 		
 		return requiredParameters;

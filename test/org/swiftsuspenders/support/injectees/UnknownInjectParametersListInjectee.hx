@@ -10,7 +10,7 @@ import org.swiftsuspenders.support.types.Clazz;
 
 class UnknownInjectParametersListInjectee {
 
-	@:meta(Inject(param=true,param="str",param=123))
+	@Inject({param:true,param:"str",param:123})
 	public var property : Clazz;
 
 	public function new() {

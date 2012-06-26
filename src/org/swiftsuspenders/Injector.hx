@@ -148,8 +148,8 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 	//----------------------       Private / Protected Properties       ----------------------//
 	static var INJECTION_POINTS_CACHE = new Hash<TypeDescription>();
 	private var _parentInjector : Injector;
-	//var _applicationDomain : ApplicationDomain;
-	var _classDescriptor : TypeDescriptor;
+	//private var _applicationDomain : ApplicationDomain;
+	private var _classDescriptor : TypeDescriptor;
 	private var _mappings : Hash<InjectionMapping>;
 	private var _defaultProviders : Hash<DependencyProvider>;
 	private var _mappingsInProcess : Hash<Bool>;
@@ -336,12 +336,12 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 	 *
 	 * @see #parentInjector
 	 */	
-	//public function createChildInjector(applicationDomain : ApplicationDomain = null) : Injector {
-		//var injector : Injector = new Injector();
-		//injector.applicationDomain = applicationDomain || this.applicationDomain;
-		//injector.parentInjector = this;
-		//return injector;
-	//}
+	public function createChildInjector(applicationDomain : ApplicationDomain = null) : Injector {
+		var injector : Injector = new Injector();
+		//injector.applicationDomain = applicationDomain!=null ? applicationDomain : this.applicationDomain;
+		injector.parentInjector = this;
+		return injector;
+	}
 
 	/**
 	 * Sets the <code>Injector</code> to ask in case the current <code>Injector</code> doesn't
@@ -375,14 +375,14 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 		//return _applicationDomain;
 	//}
 //
-	//public function addTypeDescription(type : Class<Dynamic>, description : TypeDescription) : Void {
-		//_classDescriptor.addDescription(type, description);
-	//}
+	public function addTypeDescription(type : Class<Dynamic>, description : TypeDescription) : Void {
+		_classDescriptor.addDescription(type, description);
+	}
 
 	//----------------------             Internal Methods               ----------------------//
 		
 	public static function purgeInjectionPointsCache() : Void {
-		//INJECTION_POINTS_CACHE = new Dictionary(true);
+		INJECTION_POINTS_CACHE = new Hash<TypeDescription>();
 	}
 
 	public function instantiateUnmapped(type : Class<Dynamic>) : Dynamic {

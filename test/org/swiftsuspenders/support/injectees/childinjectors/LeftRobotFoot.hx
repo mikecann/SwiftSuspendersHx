@@ -8,6 +8,7 @@ package org.swiftsuspenders.support.injectees.childinjectors;
 
 class LeftRobotFoot extends RobotFoot {
 
+	@Inject
 	public function new(toes : RobotToes = null) {
 		super(toes);
 	}

@@ -10,7 +10,7 @@ import org.swiftsuspenders.Injector;
 
 class NestedNestedInjectorInjectee {
 
-	@:meta(Inject())
+	@Inject()
 	public var injector : Injector;
 
 	public function new() {

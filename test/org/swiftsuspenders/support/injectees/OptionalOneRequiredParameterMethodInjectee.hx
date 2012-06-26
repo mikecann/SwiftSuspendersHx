@@ -11,7 +11,8 @@ import org.swiftsuspenders.support.types.Clazz;
 class OptionalOneRequiredParameterMethodInjectee {
 
 	var m_dependency : Clazz;
-	@:meta(Inject(optional=true))
+	
+	@OptionalInject
 	public function setDependency(dependency : Clazz) : Void {
 		m_dependency = dependency;
 	}
