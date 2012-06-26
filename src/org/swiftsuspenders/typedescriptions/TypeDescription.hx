@@ -6,7 +6,6 @@
  */
 package org.swiftsuspenders.typedescriptions;
 
-import flash.utils.Dictionary;
 import haxe.Int32;
 import org.swiftsuspenders.InjectorError;
 

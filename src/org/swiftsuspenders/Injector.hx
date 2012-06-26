@@ -6,9 +6,6 @@
  */
 package org.swiftsuspenders;
 
-import flash.events.EventDispatcher;
-import flash.system.ApplicationDomain;
-import flash.utils.Dictionary;
 import org.swiftsuspenders.dependencyproviders.ClassProvider;
 import org.swiftsuspenders.dependencyproviders.DependencyProvider;
 import org.swiftsuspenders.dependencyproviders.LocalOnlyProvider;
@@ -99,6 +96,7 @@ import org.swiftsuspenders.utils.TypeDescriptor;
  *
  * @eventType org.swiftsuspenders.MappingEvent.PRE_MAPPING_CHANGE
  */@:meta(Event(name="preMappingChange",type="org.swiftsuspenders.MappingEvent"))
+ 
 /**
  * This event is dispatched each time an injector mapping is changed in any way, right after
  * the change is applied.
@@ -122,8 +120,10 @@ import org.swiftsuspenders.utils.TypeDescriptor;
  * the dispatching injector.</p>
  *
  * @eventType org.swiftsuspenders.MappingEvent.POST_MAPPING_REMOVE
- */@:meta(Event(name="postMappingRemove",type="org.swiftsuspenders.MappingEvent"))
-/**
+ */
+@:meta(Event(name = "postMappingRemove", type = "org.swiftsuspenders.MappingEvent"))
+
+/** * 
  * This event is dispatched if an existing mapping is overridden without first unmapping it.
  *
  * <p>The reason for dispatching an event (and tracing a warning) is that in most cases,
@@ -134,13 +134,14 @@ import org.swiftsuspenders.utils.TypeDescriptor;
  * the dispatching injector.</p>
  *
  * @eventType org.swiftsuspenders.MappingEvent.POST_MAPPING_REMOVE
- */@:meta(Event(name="mappingOverride",type="org.swiftsuspenders.MappingEvent"))
+ */
+@:meta(Event(name="mappingOverride",type="org.swiftsuspenders.MappingEvent"))
 
  /**
  * The <code>Injector</code> manages the mappings and acts as the central hub from which all
  * injections are started.
  */
- class Injector extends EventDispatcher 
+ class Injector // extends EventDispatcher 
  {
 	public var parentInjector(getParentInjector, setParentInjector) : Injector;
 	//public var applicationDomain(getApplicationDomain, setApplicationDomain) : ApplicationDomain;
@@ -171,8 +172,7 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 		}
 
 		_classDescriptor = new TypeDescriptor(_reflector, INJECTION_POINTS_CACHE);
-		//_applicationDomain = ApplicationDomain.currentDomain;
-		super();
+		//_applicationDomain = ApplicationDomain.currentDomain;	
 	}
 
 	/**
@@ -226,7 +226,7 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 		_mappings.remove(mappingId);
 		providerMappings.remove(mappingId);
 
-		hasEventListener(MappingEvent.POST_MAPPING_REMOVE) && dispatchEvent(new MappingEvent(MappingEvent.POST_MAPPING_REMOVE, type, name, null));
+		//hasEventListener(MappingEvent.POST_MAPPING_REMOVE) && dispatchEvent(new MappingEvent(MappingEvent.POST_MAPPING_REMOVE, type, name, null));
 	}
 
 	/**
@@ -336,7 +336,7 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 	 *
 	 * @see #parentInjector
 	 */	
-	public function createChildInjector(applicationDomain : ApplicationDomain = null) : Injector {
+	public function createChildInjector(/* applicationDomain : ApplicationDomain = null */) : Injector {
 		var injector : Injector = new Injector();
 		//injector.applicationDomain = applicationDomain!=null ? applicationDomain : this.applicationDomain;
 		injector.parentInjector = this;
@@ -391,7 +391,7 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 			throw new InjectorError("Can't instantiate interface " + Type.getClassName(type));
 		}
 		var instance = description.ctor.createInstance(type, this);
-		hasEventListener(InjectionEvent.POST_INSTANTIATE) && dispatchEvent(new InjectionEvent(InjectionEvent.POST_INSTANTIATE, instance, type));
+		//hasEventListener(InjectionEvent.POST_INSTANTIATE) && dispatchEvent(new InjectionEvent(InjectionEvent.POST_INSTANTIATE, instance, type));
 		applyInjectionPoints(instance, type, description.injectionPoints);
 		return instance;
 		return null;
@@ -481,12 +481,12 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 		}
 		_mappingsInProcess.set(mappingId, true);
 
-		hasEventListener(MappingEvent.PRE_MAPPING_CREATE) && dispatchEvent(new MappingEvent(MappingEvent.PRE_MAPPING_CREATE, type, name, null));
+		//hasEventListener(MappingEvent.PRE_MAPPING_CREATE) && dispatchEvent(new MappingEvent(MappingEvent.PRE_MAPPING_CREATE, type, name, null));
 		var mapping = new InjectionMapping(this, type, name, mappingId);		
 		_mappings.set(mappingId, mapping);
 
 		var sealKey : Dynamic = mapping.seal();
-		hasEventListener(MappingEvent.POST_MAPPING_CREATE) && dispatchEvent(new MappingEvent(MappingEvent.POST_MAPPING_CREATE, type, name, mapping));
+		//hasEventListener(MappingEvent.POST_MAPPING_CREATE) && dispatchEvent(new MappingEvent(MappingEvent.POST_MAPPING_CREATE, type, name, mapping));
 		
 		_mappingsInProcess.remove(mappingId);	
 		mapping.unseal(sealKey);
@@ -494,13 +494,13 @@ import org.swiftsuspenders.utils.TypeDescriptor;
 	}	
 
 	public function applyInjectionPoints(target : Dynamic, targetType : Class<Dynamic>, injectionPoint : InjectionPoint) : Void {
-		hasEventListener(InjectionEvent.PRE_CONSTRUCT) && dispatchEvent(new InjectionEvent(InjectionEvent.PRE_CONSTRUCT, target, targetType));
+		//hasEventListener(InjectionEvent.PRE_CONSTRUCT) && dispatchEvent(new InjectionEvent(InjectionEvent.PRE_CONSTRUCT, target, targetType));
 		while(injectionPoint!=null) {
 			injectionPoint.applyInjection(target, targetType, this);
 			injectionPoint = injectionPoint.next;
 		}
 
-		hasEventListener(InjectionEvent.POST_CONSTRUCT) && dispatchEvent(new InjectionEvent(InjectionEvent.POST_CONSTRUCT, target, targetType));
+		//hasEventListener(InjectionEvent.POST_CONSTRUCT) && dispatchEvent(new InjectionEvent(InjectionEvent.POST_CONSTRUCT, target, targetType));
 	}
 
 }

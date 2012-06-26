@@ -6,7 +6,6 @@
  */
 package org.swiftsuspenders.dependencyproviders;
 
-import flash.utils.Dictionary;
 import org.swiftsuspenders.Injector;
 
 class ClassProvider implements DependencyProvider 

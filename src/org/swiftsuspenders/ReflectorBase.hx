@@ -6,8 +6,6 @@
  */
 package org.swiftsuspenders;
 
-import flash.utils.Proxy;
-
 class ReflectorBase {
 
 	//----------------------              Public Properties             ----------------------//

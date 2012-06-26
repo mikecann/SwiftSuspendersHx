@@ -12,6 +12,7 @@ class ClassInjectee {
 
 	@Inject
 	public var property : Clazz;
+	
 	public var someProperty : Bool;
 	
 	public function new() {

@@ -6,7 +6,6 @@
  */
 package org.swiftsuspenders.support.providers;
 
-import flash.utils.Dictionary;
 import org.swiftsuspenders.Injector;
 import org.swiftsuspenders.dependencyproviders.DependencyProvider;
 import org.swiftsuspenders.support.types.Clazz;

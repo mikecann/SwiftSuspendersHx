@@ -77,9 +77,9 @@ class InjectorTests extends TestCase
 		injector.map(Clazz).toValue(value);
 		injector.injectInto(injectee);
 		
-		assertEquals(value, injectee.property);
+		assertTrue(value==injectee.property);
 		injector.injectInto(injectee2);
-		assertEquals(injectee.property, injectee2.property);
+		assertTrue(injectee.property==injectee2.property);
 	}
 
 	public function testBindValueByInterface() : Void 

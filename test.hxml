@@ -7,3 +7,21 @@
 --no-inline 
 -D fdb 
 -debug
+
+#--next
+
+#-cp src
+#-cp test
+#-js bin/js/test.js 
+#-main Main
+#--macro RTTI.generate()
+#--no-inline
+#-debug
+
+#-cp src
+#-cp test
+#-neko bin/neko/test.n 
+#-main Main
+#--macro RTTI.generate()
+#--no-inline
+#-debug

@@ -135,7 +135,7 @@ class InjectionMapping
 		if(_sealed) throwSealedError();
 		if(hasProvider() && provider != null && !_defaultProviderSet)  {
 			trace("Warning: Injector already has a mapping for " + _mappingId + ".\n " + "If you have overridden this mapping intentionally you can use " + "\"injector.unmap()\" prior to your replacement mapping in order to " + "avoid seeing this message.");
-			_creatingInjector.hasEventListener(MappingEvent.MAPPING_OVERRIDE) && _creatingInjector.dispatchEvent(new MappingEvent(MappingEvent.MAPPING_OVERRIDE, _type, _name, this));
+			//_creatingInjector.hasEventListener(MappingEvent.MAPPING_OVERRIDE) && _creatingInjector.dispatchEvent(new MappingEvent(MappingEvent.MAPPING_OVERRIDE, _type, _name, this));
 		}
 		dispatchPreChangeEvent();
 		_defaultProviderSet = false;
@@ -355,11 +355,11 @@ class InjectionMapping
 	}
 
 	function dispatchPreChangeEvent() : Void {
-		_creatingInjector.hasEventListener(MappingEvent.PRE_MAPPING_CHANGE) && _creatingInjector.dispatchEvent(new MappingEvent(MappingEvent.PRE_MAPPING_CHANGE, _type, _name, this));
+		//_creatingInjector.hasEventListener(MappingEvent.PRE_MAPPING_CHANGE) && _creatingInjector.dispatchEvent(new MappingEvent(MappingEvent.PRE_MAPPING_CHANGE, _type, _name, this));
 	}
 
 	function dispatchPostChangeEvent() : Void {
-		_creatingInjector.hasEventListener(MappingEvent.POST_MAPPING_CHANGE) && _creatingInjector.dispatchEvent(new MappingEvent(MappingEvent.POST_MAPPING_CHANGE, _type, _name, this));
+		//_creatingInjector.hasEventListener(MappingEvent.POST_MAPPING_CHANGE) && _creatingInjector.dispatchEvent(new MappingEvent(MappingEvent.POST_MAPPING_CHANGE, _type, _name, this));
 	}
 
 }

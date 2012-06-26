@@ -6,7 +6,6 @@
  */
 package org.swiftsuspenders.dependencyproviders;
 
-import flash.utils.Dictionary;
 import org.swiftsuspenders.InjectionMapping;
 import org.swiftsuspenders.Injector;
 

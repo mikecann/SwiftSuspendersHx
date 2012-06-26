@@ -1,4 +1,4 @@
-remneko bin/neko/test.n
-cd bin/as3/
-test.swf
-rem pause
+neko bin/neko/test.n
+rem cd bin/as3/
+rem test.swf
+pause

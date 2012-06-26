@@ -50,7 +50,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Custom" />
-    <option testMovieCommand="bin\as3\test.swf" />
+    <option testMovieCommand="bin/as3/test.swf" />
   </options>
   <!-- Plugin storage -->
   <storage />
